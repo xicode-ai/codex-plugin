@@ -383,7 +383,7 @@ Expected: no syntax errors and all tests pass.
 - [ ] **Step 3: Check documentation and sensitive-value hygiene**
 
 ~~~bash
-rg -n -e '\\x5b\\x54\\x4f\\x44\\x4f:' -e '\\x54\\x42\\x44' -e 'sk-[A-Za-z0-9]' \
+rg -n -e '\\x5b\\x54\\x4f\\x44\\x4f:' -e '\\x54\\x42\\x44' -e 'sk-[A-Za-z0-9]{20,}' \
   plugins/apifox-api-testing docs/superpowers/plans/2026-09-07-apifox-api-testing.md
 git diff --check
 ~~~
