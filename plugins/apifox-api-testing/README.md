@@ -38,3 +38,14 @@
 - `execution-summary.json`：不包含敏感值的机器可读汇总。
 
 `scripts/` 下的脚本只处理本地计划和报告，不直接连接 Apifox 或数据库。
+
+## 从 GitHub 安装
+
+仓库内置 marketplace 配置。将仓库发布到 GitHub 后，可使用以下命令添加 marketplace 并安装插件：
+
+```bash
+codex plugin marketplace add https://github.com/xicode-ai/codex-plugin.git
+codex plugin add apifox-api-testing --marketplace codex-plugin-local
+```
+
+安装后请新建 Codex 线程，使新的 Skill 配置生效。
