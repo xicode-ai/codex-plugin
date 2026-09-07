@@ -1,0 +1,2 @@
+# 仅示例环境别名；真实映射由 Codex 中已配置的 Apifox/dbhub MCP 解析。
+environment: staging-oms

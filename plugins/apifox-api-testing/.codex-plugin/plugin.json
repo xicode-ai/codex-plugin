@@ -1,0 +1,26 @@
+{
+  "name": "apifox-api-testing",
+  "version": "0.1.0",
+  "description": "Design and execute PRD-driven full-scenario API tests through Apifox MCP and dbhub MCP.",
+  "author": {
+    "name": "Xicode AI",
+    "email": "engineering@example.com"
+  },
+  "license": "MIT",
+  "keywords": ["apifox", "api-testing", "dbhub", "prd", "test-report"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Apifox API Testing",
+    "shortDescription": "PRD-driven Apifox API testing with database verification",
+    "longDescription": "Designs full-scenario API tests from a PRD and executes safe, traceable API and database verification through the user's configured Apifox and dbhub MCPs.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": ["Analyze", "Test", "Write"],
+    "defaultPrompt": [
+      "根据 PRD 在指定环境执行 Apifox 全场景接口测试",
+      "生成 API 与数据库一致性测试计划",
+      "输出脱敏的标准接口测试报告"
+    ],
+    "brandColor": "#2563EB"
+  }
+}
