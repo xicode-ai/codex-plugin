@@ -9,6 +9,16 @@
 - Apifox MCP 预检：{{apifox_preflight}}
 - dbhub MCP 预检：{{dbhub_preflight}}
 
+## 1.1 输入来源
+
+- PRD：{{prd_input_summary}}
+- 用户测试用例数：{{provided_case_count}}
+- 自动生成用例数：{{generated_case_count}}
+- 合并用例数：{{merged_case_count}}
+- 冲突用例数：{{conflict_case_count}}
+- 来源统计：
+{{source_counts}}
+
 ## 2. 执行摘要
 
 | 指标 | 数量 |
@@ -38,6 +48,12 @@
 
 {{case_details}}
 
+## 4.1 用户用例追踪
+
+| 用户用例 ID | 标准用例 ID | 来源 | 需求引用 | 接口 | 状态 |
+| --- | --- | --- | --- | --- | --- |
+{{user_case_traceability}}
+
 ## 5. 缺陷与风险
 
 {{defects}}
@@ -45,6 +61,10 @@
 ## 6. 阻塞与未执行项
 
 {{blockers}}
+
+## 6.1 冲突与待确认项
+
+{{conflicts}}
 
 ## 7. 数据清理与环境影响
 

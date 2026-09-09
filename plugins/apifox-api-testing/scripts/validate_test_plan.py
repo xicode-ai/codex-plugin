@@ -21,6 +21,7 @@ REQUIRED_CASE_FIELDS = (
     "executionStatus",
 )
 VALID_STATUSES = {"planned", "passed", "failed", "blocked", "skipped", "error"}
+VALID_SOURCES = {"provided", "generated", "merged", "conflict"}
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 MUTATING_PATH_WORDS = ("cancel", "approve", "submit", "delete", "remove", "update")
 CASE_START_RE = re.compile(r"^\s*-\s+id:\s*(\S.*)$")
@@ -45,6 +46,10 @@ def _field_value(block: str, field: str) -> str | None:
     pattern = re.compile(rf"^\s*{re.escape(field)}\s*:\s*(.*?)\s*$", re.MULTILINE)
     match = pattern.search(block)
     return match.group(1).strip() if match else None
+
+
+def _has_any_nonempty_field(block: str, fields: tuple[str, ...]) -> bool:
+    return any(_has_nonempty_field(block, field) for field in fields)
 
 
 def validate_plan_text(text: str) -> list[str]:
@@ -84,6 +89,21 @@ def validate_plan_text(text: str) -> list[str]:
         status = (_field_value(block, "executionStatus") or "").lower()
         if status and status not in VALID_STATUSES:
             errors.append(f"{case_id}: invalid executionStatus {status}")
+
+        source = (_field_value(block, "source") or "").lower()
+        if source and source not in VALID_SOURCES:
+            errors.append(f"{case_id}: invalid source {source}")
+        if source in {"provided", "merged"} and not re.search(
+            r"^\s*userCaseId\s*:\s*(\S.*)$", block, re.MULTILINE
+        ):
+            errors.append(f"{case_id}: {source} case requires sourceEvidence.userCaseId")
+        if source == "conflict":
+            if status not in {"blocked", "skipped"}:
+                errors.append(f"{case_id}: conflict case must be blocked or skipped")
+            if not _has_any_nonempty_field(
+                block, ("conflictReason", "blockerReason", "reason")
+            ):
+                errors.append(f"{case_id}: conflict case requires a conflict reason")
 
         is_mutating = method in MUTATING_METHODS or any(word in path for word in MUTATING_PATH_WORDS)
         confirmation = (_field_value(block, "requiresConfirmation") or "").lower()

@@ -63,6 +63,62 @@ def _requirements_table(requirements: object) -> str:
     return "\n".join(rows)
 
 
+def _source_counts(summary: dict[str, Any]) -> str:
+    """Render provided/generated/merged/conflict counts."""
+
+    source_counts = summary.get("sourceCounts") or {}
+    return "\n".join(
+        f"- {source}: {source_counts.get(source, 0)}"
+        for source in ("provided", "generated", "merged", "conflict")
+    )
+
+
+def _user_case_traceability(cases: object) -> str:
+    """Render user case ID, normalized case ID, requirements, endpoint, and status."""
+
+    if not isinstance(cases, list):
+        return "| - | - | - | - | - | - |"
+    rows: list[str] = []
+    for case in cases:
+        if not isinstance(case, dict) or not case.get("userCaseId"):
+            continue
+        endpoint = case.get("endpoint") or {}
+        endpoint_text = (
+            f"{_text(endpoint.get('method'))} {_text(endpoint.get('path'))}"
+            if isinstance(endpoint, dict)
+            else _text(endpoint)
+        )
+        requirements = case.get("requirementRefs") or case.get("requirements") or "-"
+        rows.append(
+            "| {user} | {case_id} | {source} | {requirements} | {endpoint} | {status} |".format(
+                user=_text(case.get("userCaseId")),
+                case_id=_text(case.get("id")),
+                source=_text(case.get("source")),
+                requirements=_text(requirements),
+                endpoint=endpoint_text,
+                status=_text(case.get("executionStatus") or case.get("status")),
+            )
+        )
+    return "\n".join(rows) or "| - | - | - | - | - | - |"
+
+
+def _conflict_details(conflicts: object) -> str:
+    """Render conflict case ID, source, reason, impact, and required confirmation."""
+
+    if not isinstance(conflicts, list) or not conflicts:
+        return "- None"
+    rows: list[str] = []
+    for conflict in conflicts:
+        if isinstance(conflict, dict):
+            case_id = conflict.get("caseId") or conflict.get("id") or "case"
+            reason = conflict.get("reason") or conflict.get("conflictReason") or "-"
+            impact = conflict.get("impact") or conflict.get("blockerReason") or "-"
+            rows.append(f"- {case_id}: {reason}；影响：{impact}")
+        else:
+            rows.append(f"- {_text(conflict)}")
+    return "\n".join(rows)
+
+
 def _case_details(cases: object) -> str:
     if not isinstance(cases, list) or not cases:
         return "- No cases were executed."
@@ -81,6 +137,8 @@ def _case_details(cases: object) -> str:
             "\n".join(
                 [
                     f"### {_text(case.get('id'))} - {_text(case.get('businessFlow'))}",
+                    f"- 来源：{_text(case.get('source'))}",
+                    f"- 用户用例 ID：{_text(case.get('userCaseId'))}",
                     f"- 分类：{_text(case.get('category'))}",
                     f"- 接口：{endpoint_text}",
                     f"- 执行状态：{_text(case.get('executionStatus') or case.get('status'))}",
@@ -134,8 +192,16 @@ def render_report(summary: dict[str, Any], template_text: str) -> str:
         "db_assertions_failed": counts.get("db_assertions_failed", 0),
         "conclusion_status": conclusion.get("status") or "BLOCKED",
         "conclusion_reason": conclusion.get("reason") or "-",
+        "prd_input_summary": metadata.get("prd_input_summary") or "provided",
+        "provided_case_count": (summary.get("sourceCounts") or {}).get("provided", 0),
+        "generated_case_count": (summary.get("sourceCounts") or {}).get("generated", 0),
+        "merged_case_count": (summary.get("sourceCounts") or {}).get("merged", 0),
+        "conflict_case_count": (summary.get("sourceCounts") or {}).get("conflict", 0),
+        "source_counts": _source_counts(summary),
         "requirements_table": _requirements_table(summary.get("requirements")),
         "case_details": _case_details(cases),
+        "user_case_traceability": _user_case_traceability(cases),
+        "conflicts": _conflict_details(summary.get("conflicts")),
         "defects": _bullets(summary.get("defects")),
         "blockers": _bullets(summary.get("blockers")),
         "cleanup": _bullets(summary.get("cleanup")),

@@ -16,8 +16,11 @@
 调用插件时提供一份 PRD 和环境标识，例如：
 
 ```text
-请根据以下 PRD，在测试环境 staging-oms 执行全场景接口测试：
+请根据以下 PRD 和已有测试用例，在测试环境 staging-oms 设计集成测试计划：
 <PRD 文档>
+
+已有测试用例：
+<可选的 Markdown 表格、YAML、JSON、编号列表或自然语言测试用例>
 ```
 
 插件会先校验两个 MCP 是否可用，并确认环境标识能够映射到同一个 Apifox/dbhub 测试环境。
@@ -38,6 +41,8 @@
 - `execution-summary.json`：不包含敏感值的机器可读汇总。
 
 `scripts/` 下的脚本只处理本地计划和报告，不直接连接 Apifox 或数据库。
+
+用户提供的测试用例会作为高优先级基线，与 PRD、Apifox 契约和 dbhub 数据证据合并。相同语义的用例标记为 `merged` 并补充 API/DB 断言；语义冲突标记为 `conflict`，在确认前不会自动执行。
 
 ## 从 GitHub 安装
 

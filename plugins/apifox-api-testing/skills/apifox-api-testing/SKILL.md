@@ -5,7 +5,7 @@ description: Use when a user provides a PRD and environment identifier and asks 
 
 # Apifox API Testing
 
-根据用户提供的 PRD 文档和测试环境标识，设计、审阅并执行可追踪的全场景接口测试。运行时只调用当前 Codex 会话中实际可用的 Apifox MCP 和 dbhub MCP；本 Skill 不携带凭据、不猜测环境、不把局部结果表述为生产或发布就绪。
+根据用户提供的 PRD 文档、测试环境标识和可选的用户测试用例，设计、审阅并执行可追踪的全场景接口测试。运行时只调用当前 Codex 会话中实际可用的 Apifox MCP 和 dbhub MCP；本 Skill 不携带凭据、不猜测环境、不把局部结果表述为生产或发布就绪。
 
 ## 1. 输入契约
 
@@ -13,6 +13,7 @@ description: Use when a user provides a PRD and environment identifier and asks 
 
 1. PRD 文档或明确的需求描述。
 2. 测试环境标识，例如 `staging-oms`。
+3. 可选的用户测试用例，支持 Markdown 表格、YAML、JSON、编号列表或自然语言描述。
 
 如果缺少任一项，在任何 MCP 调用前要求用户补齐缺失输入。不要要求用户把 Token、密码、Cookie 或数据库连接串粘贴到对话中。
 
@@ -22,6 +23,20 @@ description: Use when a user provides a PRD and environment identifier and asks 
 请根据以下 PRD，在测试环境 staging-oms 执行全场景接口测试：
 <PRD 文档>
 ```
+
+也可以同时提供已有测试用例：
+
+```text
+测试环境：staging-oms
+
+PRD：
+<PRD 文档>
+
+已有测试用例：
+<测试用例表格、YAML、JSON 或编号列表>
+```
+
+用户测试用例是高优先级基线。必须保留用户用例 ID、步骤、输入/前置条件和预期结果；插件可以补充接口和数据库断言，但不得不静默改写用户意图。
 
 ## 2. 执行总则
 
@@ -77,6 +92,27 @@ description: Use when a user provides a PRD and environment identifier and asks 
 - API 断言和数据库断言。
 - 风险、是否需要确认、清理策略。
 - 计划、执行、通过、失败、阻塞、跳过或错误状态。
+- 可选用户用例的来源、原始用例 ID、期望结果和冲突信息。
+
+当用户明确提供测试用例时，按以下顺序生成集成测试计划：
+
+1. 解析 PRD 的需求、角色、业务流程、状态和规则。
+2. 解析并归一化用户测试用例，保留其原始意图摘要。
+3. 匹配 Apifox 接口契约和 dbhub schema/前置数据。
+4. 为用户用例补充可验证的 API/DB 断言、风险和清理策略。
+5. 生成 PRD 覆盖缺口，并与用户用例进行语义去重。
+6. 审阅冲突后再进入执行门禁。
+
+每条标准化用例增加 `source`：
+
+- `provided`：用户提供且未做语义补充；
+- `generated`：由 PRD、接口契约或数据库分析生成；
+- `merged`：与用户用例语义相同，保留用户基线并补充 API/DB 断言；
+- `conflict`：与 PRD、接口契约、数据库事实或另一用户用例存在未解决冲突。
+
+语义指纹使用：需求引用 + method/path + 场景分类 + 关键输入条件 + 核心预期结果。只有能证明语义相同才合并；文本相似但语义不确定时保留为独立用例。
+
+以下情况必须标记为 `conflict`，不得自动执行：用户预期与 PRD 规则或接口契约冲突、method/path 不匹配、预期状态/错误码/字段不匹配、dbhub 无法证实要求的数据状态，或清理范围不可安全确定。冲突必须记录来源、脱敏差异、影响范围和待确认问题；未解决冲突的执行状态为 `BLOCKED`。
 
 至少覆盖以下场景类型：
 
@@ -138,6 +174,9 @@ description: Use when a user provides a PRD and environment identifier and asks 
 - DB 结果：调用前快照、调用后条件、状态/关联/计数核验。
 - 清理结果：完成、未执行、失败或遗留风险。
 - 工具错误、重试和用户确认记录。
+- 用户用例 ID、标准化用例 ID、来源类型和需求追踪关系。
+- `provided`、`generated`、`merged`、`conflict` 来源统计。
+- 冲突和待用户确认的问题。
 
 状态定义：
 

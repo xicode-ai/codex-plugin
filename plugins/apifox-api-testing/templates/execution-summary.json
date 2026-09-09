@@ -12,8 +12,15 @@
     "db_assertions_passed": 0,
     "db_assertions_failed": 0
   },
+  "sourceCounts": {
+    "provided": 0,
+    "generated": 0,
+    "merged": 0,
+    "conflict": 0
+  },
   "requirements": [],
   "cases": [],
+  "conflicts": [],
   "defects": [],
   "blockers": [],
   "cleanup": [],

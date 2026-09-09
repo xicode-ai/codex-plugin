@@ -32,8 +32,43 @@ cases:
     executionStatus: planned
 """
 
+PROVIDED_PLAN = """environment: staging-oms
+cases:
+  - id: API-USER-001
+    source: provided
+    sourceEvidence:
+      userCaseId: TC-001
+    requirementRefs: [REQ-001]
+    businessFlow: create appointment
+    category: normal
+    endpoint:
+      method: POST
+      path: /appointments
+    assertions:
+      api:
+        - status
+      database:
+        - record existence
+    risk: medium
+    requiresConfirmation: true
+    executionStatus: planned
+"""
+
+CONFLICT_PLAN = PROVIDED_PLAN.replace(
+    "    source: provided\n", "    source: conflict\n"
+).replace(
+    "    executionStatus: planned\n", "    executionStatus: passed\n"
+)
+
 
 class PluginArtifactTests(unittest.TestCase):
+    def test_skill_supports_user_cases_as_high_priority_baseline(self):
+        skill = (PLUGIN_ROOT / "skills" / "apifox-api-testing" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        for phrase in ("用户测试用例", "provided", "merged", "conflict", "不静默"):
+            self.assertIn(phrase, skill)
+
     def test_manifest_has_no_external_mcp_declaration(self):
         manifest = json.loads(
             (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
@@ -51,6 +86,13 @@ class PluginArtifactTests(unittest.TestCase):
         invalid = invalid.replace("      database:\n        - record existence\n", "")
         errors = validate_plan_text(invalid)
         self.assertTrue(any("assertions" in error for error in errors))
+
+    def test_validate_test_plan_accepts_provided_case_traceability(self):
+        self.assertEqual(validate_plan_text(PROVIDED_PLAN), [])
+
+    def test_validate_test_plan_rejects_executable_conflict_case(self):
+        errors = validate_plan_text(CONFLICT_PLAN)
+        self.assertTrue(any("conflict" in error for error in errors))
 
     def test_redact_evidence_masks_auth_and_secret_fields(self):
         value = {
@@ -105,6 +147,43 @@ class PluginArtifactTests(unittest.TestCase):
         self.assertIn("PARTIAL", report)
         self.assertIn("API-001", report)
         self.assertIn("dbhub fixture capability unavailable", report)
+
+    def test_render_report_includes_source_counts_and_conflicts(self):
+        summary = {
+            "metadata": {"environment": "staging-oms"},
+            "counts": {"total": 4},
+            "sourceCounts": {"provided": 1, "generated": 1, "merged": 1, "conflict": 1},
+            "requirements": [],
+            "cases": [
+                {
+                    "id": "API-USER-001",
+                    "source": "merged",
+                    "userCaseId": "TC-001",
+                    "requirementRefs": ["REQ-001"],
+                    "endpoint": {"method": "POST", "path": "/appointments"},
+                    "executionStatus": "passed",
+                }
+            ],
+            "conflicts": [
+                {
+                    "caseId": "API-USER-002",
+                    "source": "conflict",
+                    "reason": "Expected status differs from contract",
+                    "impact": "case blocked",
+                }
+            ],
+            "defects": [],
+            "blockers": [],
+            "cleanup": [],
+            "conclusion": {"status": "PARTIAL", "reason": "Conflict requires review."},
+        }
+        template = (PLUGIN_ROOT / "templates" / "test-report.md").read_text(encoding="utf-8")
+        report = render_report(summary, template)
+        for value in ("provided: 1", "generated: 1", "merged: 1", "conflict: 1"):
+            self.assertIn(value, report)
+        self.assertIn("TC-001", report)
+        self.assertIn("API-USER-002", report)
+        self.assertIn("Expected status differs from contract", report)
 
 
 if __name__ == "__main__":

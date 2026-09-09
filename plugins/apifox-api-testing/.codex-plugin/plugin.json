@@ -1,6 +1,6 @@
 {
   "name": "apifox-api-testing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design and execute PRD-driven full-scenario API tests through Apifox MCP and dbhub MCP.",
   "author": {
     "name": "Xicode AI",
