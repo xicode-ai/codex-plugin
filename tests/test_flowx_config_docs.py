@@ -10,6 +10,7 @@ PLUGIN_ROOT = ROOT / "plugins" / "flowx-config-docs"
 
 sys.path.insert(0, str(PLUGIN_ROOT / "scripts"))
 from render_config_doc import render_config_document  # noqa: E402
+from validate_config_data import validate_config_payload  # noqa: E402
 
 BASE_PAYLOAD = {
     "metadata": {
@@ -65,6 +66,31 @@ BASE_PAYLOAD = {
     "notices": {"dictionary": [], "menus": [], "i18n": []},
     "translation_sources": {"database": 1, "automatic": 0, "pending": 0},
 }
+
+
+class FlowxConfigValidatorTests(unittest.TestCase):
+    def test_base_payload_is_valid(self):
+        self.assertEqual(validate_config_payload(BASE_PAYLOAD), [])
+
+    def test_validator_requires_all_three_sections_and_fields(self):
+        invalid = dict(BASE_PAYLOAD)
+        invalid.pop("menus")
+        invalid["dictionary"] = [dict(BASE_PAYLOAD["dictionary"][0], dict_code=None)]
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("menus" in error for error in errors))
+        self.assertTrue(any("dict_code" in error for error in errors))
+
+    def test_validator_rejects_changed_placeholders(self):
+        invalid = dict(BASE_PAYLOAD)
+        invalid["i18n"] = [dict(BASE_PAYLOAD["i18n"][0], en="Pending Putaway")]
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("placeholder" in error for error in errors))
+
+    def test_validator_rejects_sensitive_values(self):
+        invalid = dict(BASE_PAYLOAD)
+        invalid["metadata"] = dict(BASE_PAYLOAD["metadata"], connection="jdbc:postgresql://user:pass@db/app")
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("sensitive" in error for error in errors))
 
 
 class FlowxConfigRendererTests(unittest.TestCase):

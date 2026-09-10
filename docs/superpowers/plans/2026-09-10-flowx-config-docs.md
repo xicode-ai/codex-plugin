@@ -457,7 +457,7 @@ SECTION_FIELDS = {
 }
 LANGUAGE_FIELDS = ("en", "ja", "ko", "es", "pt")
 PLACEHOLDER_RE = re.compile(r"\{\{[^{}]+\}\}|\$\{[^{}]+\}|\{[A-Za-z_][A-Za-z0-9_.-]*\}|:[A-Za-z_][A-Za-z0-9_.-]*")
-SENSITIVE_KEY_RE = re.compile(r"(?:password|passwd|token|cookie|authorization|secret|credential|connection|string|dsn)", re.IGNORECASE)
+SENSITIVE_KEY_RE = re.compile(r"(?:password|passwd|token|cookie|secret|credential|connection|string|dsn)", re.IGNORECASE)
 SENSITIVE_VALUE_RE = re.compile(r"(?:Bearer\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret)=\S+)", re.IGNORECASE)
 validate_config_payload(payload: dict[str, Any]) -> list[str]
 ```
