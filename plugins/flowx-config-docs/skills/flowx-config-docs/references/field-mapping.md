@@ -10,7 +10,7 @@ operation, dict_code, dict_key, dict_value, en, ja, ko, es, pt
 
 常见语义映射：
 
-- 字典类型、字典编码、type、code → `dict_code`；
+- 字典类型、历史字段“字典编码”、type、code → 内部字段 `dict_code`，最终输出列名统一为“字典类型”；
 - 字典 key、value key、option code → `dict_key`；
 - 中文字典值、label、name → `dict_value`；
 - 语言列或语言-值行中的对应文本 → `en`、`ja`、`ko`、`es`、`pt`。

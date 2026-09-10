@@ -125,7 +125,7 @@ class FlowxConfigArtifactTests(unittest.TestCase):
         )
         for title in ("## 数据字典", "## 菜单权限", "## 国际化"):
             self.assertIn(title, template)
-        self.assertIn("操作 | 字典编码 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语", template)
+        self.assertIn("操作 | 字典类型 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语", template)
         self.assertIn("一级菜单 | 二级菜单 | 按钮菜单 or 按钮 | 菜单编码 | 路由", template)
         self.assertIn("操作类型 | 一级key | 二级key | 中文 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语", template)
 
@@ -203,7 +203,7 @@ Create `templates/flowx-config-docs.md` with placeholders only for metadata, not
 
 {{DICTIONARY_NOTES}}
 
-| 操作 | 字典编码 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语 |
+| 操作 | 字典类型 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语 |
 |---|---|---|---|---|---|---|---|---|
 {{DICTIONARY_TABLE}}
 
@@ -333,7 +333,7 @@ class FlowxConfigRendererTests(unittest.TestCase):
     def test_render_has_three_tables_and_preserves_protected_values(self):
         template = (PLUGIN_ROOT / "templates" / "flowx-config-docs.md").read_text(encoding="utf-8")
         report = render_config_document(BASE_PAYLOAD, template)
-        self.assertEqual(report.count("| 操作 | 字典编码 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语 |"), 1)
+        self.assertEqual(report.count("| 操作 | 字典类型 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语 |"), 1)
         self.assertIn("|  | productStatus | 1 | 待审核 |", report)
         self.assertIn("| 商品管理 |  |  | product | /product |", report)
         self.assertIn("|  | inboundOrder | pendingShelving | 待上架{unit} |", report)
