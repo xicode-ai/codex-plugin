@@ -16,8 +16,8 @@
 - Fixed translation columns are English, Japanese, Korean, Spanish, and Portuguese; there is no language-selection input.
 - dbhub operations are read-only; no INSERT, UPDATE, DELETE, or cleanup operation is allowed.
 - Missing database or configuration scope stops before dbhub calls; ambiguous candidates require user confirmation.
-- No match produces a complete empty section with a `未查询到匹配配置` note; query failure is reported as blocked and is not treated as an empty result.
-- Existing database translations take precedence; missing natural-language translations are filled while keys, codes, routes, permissions, and placeholders remain unchanged.
+- Only a confirmed candidate whose successful scoped query returns zero rows produces a complete empty section with a `未查询到匹配配置` note; unresolved, ambiguous, and blocked states use distinct notices and are not treated as empty results.
+- Existing database translations take precedence; missing natural-language translations are filled while keys, codes, routes, permissions, and placeholders remain unchanged. Each row carries a sanitized `_source` snapshot of its pre-translation fixed fields for validation.
 - Output is `flowx-config-{数据库名}-{日期}.md` in the current workspace, with unsafe filename characters normalized only in the filename.
 - Do not write passwords, tokens, cookies, connection strings, complete SQL parameters, or complete raw responses to files or reports.
 - Local scripts read and write local files only and must not connect to dbhub or external translation services.
@@ -287,9 +287,32 @@ The normalized payload has this shape:
     "generated_at": "2026-09-10",
     "query_status": "complete"
   },
-  "dictionary": [],
-  "menus": [],
-  "i18n": [],
+  "dictionary": [{
+    "operation": "", "dict_code": "productStatus", "dict_key": "1", "dict_value": "待审核",
+    "en": "Pending Review", "ja": "", "ko": "", "es": "", "pt": "",
+    "_source": {
+      "operation": "", "dict_code": "productStatus", "dict_key": "1", "dict_value": "待审核",
+      "en": "Pending Review", "ja": "", "ko": "", "es": "", "pt": ""
+    }
+  }],
+  "menus": [{
+    "level1": "商品管理", "level2": "", "button_or_button_menu": "", "menu_code": "product",
+    "route": "/product", "en": "Product Management", "ja": "", "ko": "", "es": "", "pt": "",
+    "sort": 1, "authorization": "product:list", "resource": "product", "operation_type": "",
+    "_source": {
+      "level1": "商品管理", "level2": "", "button_or_button_menu": "", "menu_code": "product",
+      "route": "/product", "en": "Product Management", "ja": "", "ko": "", "es": "", "pt": "",
+      "sort": 1, "authorization": "product:list", "resource": "product", "operation_type": ""
+    }
+  }],
+  "i18n": [{
+    "operation_type": "", "level1_key": "inboundOrder", "level2_key": "pendingShelving", "zh": "待上架{unit}",
+    "en": "Pending Putaway {unit}", "ja": "", "ko": "", "es": "", "pt": "",
+    "_source": {
+      "operation_type": "", "level1_key": "inboundOrder", "level2_key": "pendingShelving", "zh": "待上架{unit}",
+      "en": "Pending Putaway {unit}", "ja": "", "ko": "", "es": "", "pt": ""
+    }
+  }],
   "notices": {"dictionary": [], "menus": [], "i18n": []},
   "translation_sources": {"database": 0, "automatic": 0, "pending": 0}
 }
@@ -365,7 +388,7 @@ Implement the body with these rules:
 2. `_table_rows(rows, fields)` emits one row per mapping using the exact field tuple; an empty list emits an empty string so the header and separator remain the complete empty table.
 3. `_notes(items)` emits one `> ` line per note and an empty string for no notes.
 4. `_translation_summary(value)` emits database, automatic, and pending counts in Chinese and defaults missing counts to zero.
-5. Replace exactly the template tokens `DATABASE`, `SCOPE`, `GENERATED_AT`, `QUERY_STATUS`, `DICTIONARY_NOTES`, `DICTIONARY_TABLE`, `MENUS_NOTES`, `MENUS_TABLE`, `I18N_NOTES`, `I18N_TABLE`, and `TRANSLATION_SUMMARY`.
+5. Replace exactly the template tokens `DATABASE`, `SCOPE`, `GENERATED_AT`, `QUERY_STATUS`, `DICTIONARY_NOTES`, `DICTIONARY_TABLE`, `MENUS_NOTES`, `MENUS_TABLE`, `I18N_NOTES`, `I18N_TABLE`, and `TRANSLATION_SUMMARY` in one pass so inserted values that resemble tokens remain literal data.
 6. Ignore unknown row keys so unrecognized dbhub fields cannot enter the final document.
 7. Do not redact normal configuration values; sensitive-data rejection is handled by the validator before rendering. The renderer must never include fields outside the fixed field tuples.
 
@@ -458,7 +481,12 @@ SECTION_FIELDS = {
 LANGUAGE_FIELDS = ("en", "ja", "ko", "es", "pt")
 PLACEHOLDER_RE = re.compile(r"\{\{[^{}]+\}\}|\$\{[^{}]+\}|\{[A-Za-z_][A-Za-z0-9_.-]*\}|:[A-Za-z_][A-Za-z0-9_.-]*")
 SENSITIVE_KEY_RE = re.compile(r"(?:password|passwd|token|cookie|secret|credential|connection|string|dsn)", re.IGNORECASE)
-SENSITIVE_VALUE_RE = re.compile(r"(?:Bearer\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret)=\S+)", re.IGNORECASE)
+SENSITIVE_VALUE_RE = re.compile(r"(?:Bearer\s+\S+|Basic\s+\S+|Digest\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret|cookie|authorization)\s*[:=]\s*\S+)", re.IGNORECASE)
+PROTECTED_FIELDS = {
+    "dictionary": ("operation", "dict_code", "dict_key", "dict_value"),
+    "menus": ("level1", "level2", "button_or_button_menu", "menu_code", "route", "sort", "authorization", "resource", "operation_type"),
+    "i18n": ("operation_type", "level1_key", "level2_key", "zh"),
+}
 validate_config_payload(payload: dict[str, Any]) -> list[str]
 ```
 
@@ -466,10 +494,10 @@ Implement validation in this order:
 
 1. Verify the payload is a mapping and all `REQUIRED_SECTIONS` exist.
 2. Require `metadata.database`, `metadata.scope`, `metadata.generated_at`, and `metadata.query_status` to be non-empty strings; permit `query_status` values `complete`, `empty`, `ambiguous`, `blocked`, or `unresolved`.
-3. Require `dictionary`, `menus`, and `i18n` to be lists; every row must be a mapping containing every field in `SECTION_FIELDS[section]`. Empty natural-language and metadata fields are allowed because empty templates and missing translations are valid.
+3. Require `dictionary`, `menus`, and `i18n` to be lists; every row must be a mapping containing every field in `SECTION_FIELDS[section]` plus a complete `_source` snapshot of those fixed fields. Empty natural-language and metadata fields are allowed because empty templates and missing translations are valid.
 4. Require `notices` to be a mapping with list values for all three sections, and `translation_sources` to be a mapping whose `database`, `automatic`, and `pending` values are non-negative integers.
 5. For dictionary rows compare placeholders extracted from `dict_value` with each non-empty language value. For i18n rows compare placeholders extracted from `zh` with each non-empty language value. For menus compare placeholders in the concatenation of the three label fields (`level1`, `level2`, `button_or_button_menu`) with placeholders in each non-empty language value. Report errors containing the word `placeholder` when sets differ.
-6. Recursively inspect keys and scalar values in the entire payload. Report `sensitive` errors for sensitive key names or values matching the regexes above. Private implementation keys beginning with `_` are not rendered but are still scanned for sensitive values.
+6. Compare protected fields to `_source` and reject changes; reject changes to non-empty language values already present in `_source`; pending translation counts require a `翻译待人工确认` notice while the target language cell remains empty. Recursively inspect keys and scalar values in the entire payload. Report `sensitive` errors for sensitive key names or values matching the regexes above. Private implementation keys beginning with `_` are not rendered but are still scanned for sensitive values.
 7. Do not reject ordinary route strings, permission strings, or language text; only the explicit key/value patterns above are blocked.
 
 The CLI must print one `VALIDATION_ERROR: <error>` per error and never print the offending sensitive value.
@@ -569,22 +597,22 @@ The body must state all of the following, in executable order:
 3. Before a concrete dbhub call, inspect the current session's actual MCP tool directory and match capabilities for target-source identity, schema/table/field discovery, and read-only query. Do not invent tool names and do not assume remembered aliases exist.
 4. Confirm target database/data source using only non-sensitive identity fields, then inspect schema before querying records.
 5. Match candidate tables and fields using table names, field names, dictionary code/key/value semantics, menu parent/name/route/permission semantics, i18n keys, language fields, and user business keywords. Do not dump the whole database by default.
-6. If one candidate is clear, query only the requested scope. If multiple candidates exist, show candidate names, field summaries, and match reasons and wait for confirmation. If none exist, retain all three empty templates with a `未查询到匹配配置` or unresolved-schema note. If dbhub fails, mark the result blocked and do not call it an empty result.
+6. If one candidate is clear, query only the requested scope. If multiple candidates exist, show candidate names, field summaries, and match reasons and wait for confirmation. If no candidate exists, retain all three empty templates with an unresolved-schema note; use `未查询到匹配配置` only after a confirmed scoped query succeeds with zero rows. If dbhub fails, mark the result blocked and do not call it an empty result.
 7. Normalize rows to the exact internal fields: `operation/dict_code/dict_key/dict_value/en/ja/ko/es/pt`, the 14 menu fields, and the 9 i18n fields. Keep missing operation fields empty rather than inventing CRUD actions.
 8. Prefer non-empty database translations. Automatically translate only missing natural-language values into English, Japanese, Korean, Spanish, and Portuguese. Never translate keys, codes, dictionary values/keys, routes, sort values, authorization markers, resources, or operation codes.
-9. Extract placeholders before translation and require the translated value to preserve the same placeholder set. Preserve `{unit}`, `${name}`, `{{count}}`, `:id`, Markdown, HTML, and line-break semantics. Failed checks become `翻译待人工确认` notes and are not silently accepted.
-10. Build the normalized JSON payload, run `python3 scripts/validate_config_data.py payload.json`, and only then run `python3 scripts/render_config_doc.py payload.json --output flowx-config-{数据库名}-{日期}.md`. The runtime Skill may create the temporary payload in the current workspace but must not retain credentials or raw responses.
+9. Extract placeholders before translation and require the translated value to preserve the same placeholder set. Preserve `{unit}`, `${name}`, `{{count}}`, `:id`, Markdown, HTML, and line-break semantics. Failed checks leave the target language cell empty, become `翻译待人工确认` notes, and are not silently accepted.
+10. Resolve the plugin root from the Skill path, build the normalized JSON payload with pre-translation `_source` snapshots, run `python3 <plugin-root>/scripts/validate_config_data.py payload.json`, and only then run `python3 <plugin-root>/scripts/render_config_doc.py payload.json --output flowx-config-{数据库名}-{日期}.md`. The runtime Skill may create the temporary payload in the current workspace but must not retain credentials or raw responses.
 11. Report the generated absolute path and distinguish complete, empty, ambiguous, unresolved, blocked, and translation-pending results. Never claim a blocked query produced an empty configuration document.
 
 Include the exact fixed table headers from the template contract and the recommended input example. State that local scripts never connect to dbhub or translation services.
 
 - [ ] **Step 4: Write the three focused references**
 
-`dbhub-workflow.md` must define dynamic tool discovery, read-only target identity confirmation, schema-first discovery, candidate matching, no-match versus blocked classification, and the requirement to avoid sensitive values in evidence.
+`dbhub-workflow.md` must define dynamic tool discovery, read-only target identity confirmation, schema-first discovery, candidate matching, the exact empty-result condition versus unresolved/ambiguous/blocked classification, and the requirement to avoid sensitive values in evidence.
 
 `field-mapping.md` must define the three internal field tuples, columnar versus language-row i18n aggregation, parent/child menu relation handling, conflict behavior for duplicate language values, and the rule to leave uncertain fields empty with a note.
 
-`translation-rules.md` must define the five fixed languages, database-first precedence, protected fields, placeholder extraction/verification, Markdown/HTML preservation, and the `翻译待人工确认` failure note.
+`translation-rules.md` must define the five fixed languages, database-first precedence, protected fields, placeholder extraction/verification, Markdown/HTML preservation, empty target cells on translation failure, and the `翻译待人工确认` failure note.
 
 Each reference must contain concrete rules and examples, not links to undocumented external conventions.
 

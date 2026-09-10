@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,9 @@ from typing import Any
 DICTIONARY_FIELDS = ("operation", "dict_code", "dict_key", "dict_value", "en", "ja", "ko", "es", "pt")
 MENU_FIELDS = ("level1", "level2", "button_or_button_menu", "menu_code", "route", "en", "ja", "ko", "es", "pt", "sort", "authorization", "resource", "operation_type")
 I18N_FIELDS = ("operation_type", "level1_key", "level2_key", "zh", "en", "ja", "ko", "es", "pt")
+TEMPLATE_TOKEN_RE = re.compile(
+    r"\{\{(DATABASE|SCOPE|GENERATED_AT|QUERY_STATUS|DICTIONARY_NOTES|DICTIONARY_TABLE|MENUS_NOTES|MENUS_TABLE|I18N_NOTES|I18N_TABLE|TRANSLATION_SUMMARY)\}\}"
+)
 
 
 def _cell(value: Any) -> str:
@@ -71,9 +75,9 @@ def render_config_document(payload: dict[str, Any], template_text: str) -> str:
         "I18N_TABLE": _table_rows(payload.get("i18n", []), I18N_FIELDS),
         "TRANSLATION_SUMMARY": _translation_summary(payload.get("translation_sources", {})),
     }
-    for token, value in replacements.items():
-        template_text = template_text.replace("{{" + token + "}}", value)
-    return template_text.rstrip() + "\n"
+    return TEMPLATE_TOKEN_RE.sub(
+        lambda match: replacements[match.group(1)], template_text
+    ).rstrip() + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:

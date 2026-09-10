@@ -29,9 +29,9 @@ description: Use when a user requests FlowX data dictionary, menu permission, or
 3. 使用 dbhub 只读确认目标数据库和非敏感数据源摘要。只保留数据库名、Schema 名、表名等非敏感标识，不记录账号或连接详情。
 4. 先读取 Schema、表名和字段名，再查询配置记录。默认不导出整个数据库。
 5. 根据表名、字段名、配置编码、字典 key/value、菜单父子关系、菜单名称、路由、权限字段、国际化一级/二级 key、语言字段和用户业务关键词匹配候选配置表。
-6. 候选唯一时，只查询配置需求覆盖的记录；多个候选时列出表名、字段摘要和匹配原因，等待用户确认；没有候选时仍保留三张空模板，并注明未查询到匹配配置或无法识别配置表。
+6. 候选唯一时，只查询配置需求覆盖的记录；多个候选时列出表名、字段摘要和匹配原因，等待用户确认；没有候选时仍保留三张空模板，但只能注明无法识别配置表，不能写成“未查询到匹配配置”。
 7. dbhub 不可用、目标库无法解析、无权限、Schema 无法读取或查询失败时，标记为查询受阻。不要把查询受阻写成空结果，也不要继续伪造配置记录。
-8. 将结果转换为固定内部字段模型，再执行翻译和校验。
+8. 将结果转换为固定内部字段模型，为每条记录保存脱敏的 `_source` 基线快照，再执行翻译和校验。
 
 ## 固定内部模型
 
@@ -56,6 +56,103 @@ operation_type, level1_key, level2_key, zh, en, ja, ko, es, pt
 
 字段无法可靠映射时保持为空并增加字段映射说明；不要把相似但未经证实的字段静默填入错误列。缺少操作字段时保持为空，不推断新增、修改或删除动作。
 
+归一化 payload 必须包含以下完整顶层结构。行中的 `_source` 是查询归一化、翻译前的脱敏基线，只用于证明受保护字段和已有翻译没有被改写；不得放入原始响应、SQL 参数或凭据：
+
+```json
+{
+  "metadata": {
+    "database": "oms_test",
+    "scope": "预约单",
+    "generated_at": "2026-09-10",
+    "query_status": "complete"
+  },
+  "dictionary": [
+    {
+      "operation": "",
+      "dict_code": "productStatus",
+      "dict_key": "1",
+      "dict_value": "待审核",
+      "en": "Pending Review",
+      "ja": "",
+      "ko": "",
+      "es": "",
+      "pt": "",
+      "_source": {
+        "operation": "",
+        "dict_code": "productStatus",
+        "dict_key": "1",
+        "dict_value": "待审核",
+        "en": "Pending Review",
+        "ja": "",
+        "ko": "",
+        "es": "",
+        "pt": ""
+      }
+    }
+  ],
+  "menus": [
+    {
+      "level1": "商品管理",
+      "level2": "",
+      "button_or_button_menu": "",
+      "menu_code": "product",
+      "route": "/product",
+      "en": "Product Management",
+      "ja": "",
+      "ko": "",
+      "es": "",
+      "pt": "",
+      "sort": 1,
+      "authorization": "product:list",
+      "resource": "product",
+      "operation_type": "",
+      "_source": {
+        "level1": "商品管理",
+        "level2": "",
+        "button_or_button_menu": "",
+        "menu_code": "product",
+        "route": "/product",
+        "en": "Product Management",
+        "ja": "",
+        "ko": "",
+        "es": "",
+        "pt": "",
+        "sort": 1,
+        "authorization": "product:list",
+        "resource": "product",
+        "operation_type": ""
+      }
+    }
+  ],
+  "i18n": [
+    {
+      "operation_type": "",
+      "level1_key": "inboundOrder",
+      "level2_key": "pendingShelving",
+      "zh": "待上架{unit}",
+      "en": "Pending Putaway {unit}",
+      "ja": "",
+      "ko": "",
+      "es": "",
+      "pt": "",
+      "_source": {
+        "operation_type": "",
+        "level1_key": "inboundOrder",
+        "level2_key": "pendingShelving",
+        "zh": "待上架{unit}",
+        "en": "Pending Putaway {unit}",
+        "ja": "",
+        "ko": "",
+        "es": "",
+        "pt": ""
+      }
+    }
+  ],
+  "notices": {"dictionary": [], "menus": [], "i18n": []},
+  "translation_sources": {"database": 2, "automatic": 0, "pending": 0}
+}
+```
+
 ## 翻译门禁
 
 - 数据库已有非空翻译优先，禁止覆盖。
@@ -63,11 +160,13 @@ operation_type, level1_key, level2_key, zh, en, ja, ko, es, pt
 - 不翻译一级/二级 key、字典编码、字典 key/value、菜单编码、路由、排序、授权标识、授权资源或操作类型代码。
 - 翻译前提取占位符，翻译后校验集合完全一致。
 - 必须原样保护 `{unit}`、`${name}`、`{{count}}`、`:id` 等占位符，并保留 Markdown、HTML 和换行语义。
-- 校验失败时不静默写入，写入“翻译待人工确认”说明。
+- 校验失败时不静默写入；目标语言列保持空字符串，并在对应章节说明中写入“翻译待人工确认”及原因。
 
 ## 生成和输出
 
-始终生成三个章节，顺序固定为：数据字典、菜单权限、国际化。每个章节即使没有数据也保留完整表头和分隔线，并在表格前写入：
+始终生成三个章节，顺序固定为：数据字典、菜单权限、国际化。每个章节即使没有数据也保留完整表头和分隔线。
+
+只有在 Schema/候选表已确认、目标条件查询成功且返回零行时，才在对应表格前写入精确文本：
 
 ```text
 > 未查询到匹配配置。
@@ -84,15 +183,17 @@ operation_type, level1_key, level2_key, zh, en, ja, ko, es, pt
 将脱敏的 normalized payload 写入临时 JSON 后，先运行：
 
 ```bash
-python3 scripts/validate_config_data.py payload.json
+python3 <plugin-root>/scripts/validate_config_data.py payload.json
 ```
 
 校验通过后运行：
 
 ```bash
-python3 scripts/render_config_doc.py payload.json --output flowx-config-{数据库名}-{日期}.md
+python3 <plugin-root>/scripts/render_config_doc.py payload.json --output flowx-config-{数据库名}-{日期}.md
 ```
 
-输出文件写入当前工作区，文件名使用当前本地日期。报告最终绝对路径，并区分 complete、empty、ambiguous、unresolved、blocked 和 translation-pending 状态。
+输出文件写入当前工作区，文件名使用当前本地日期。报告最终绝对路径，并区分 complete、empty、ambiguous、unresolved、blocked 和 translation-pending 状态。候选不唯一、配置表无法识别或 dbhub 查询失败时，分别写入对应状态说明，不能使用“未查询到匹配配置”掩盖阻塞或待确认。
+
+运行脚本时，将本 SKILL.md 所在路径解析为 `<plugin-root>/skills/flowx-config-docs/SKILL.md`，再使用绝对路径 `<plugin-root>/scripts/validate_config_data.py` 和 `<plugin-root>/scripts/render_config_doc.py`；不要假定当前工作目录本身包含 `scripts/`。执行前读取 [dbhub-workflow.md](references/dbhub-workflow.md)、[field-mapping.md](references/field-mapping.md) 和 [translation-rules.md](references/translation-rules.md)。
 
 本 Skill 不调用 INSERT、UPDATE、DELETE 或清理动作；本地脚本不调用 dbhub、不调用外部翻译服务。任何错误说明都不得包含密码、Token、Cookie、连接串、完整 SQL 参数或完整原始响应。

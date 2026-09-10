@@ -1,4 +1,5 @@
 import json
+import copy
 import re
 import sys
 import unittest
@@ -68,6 +69,57 @@ BASE_PAYLOAD = {
 }
 
 
+def _attach_source_baselines(payload):
+    fields = {
+        "dictionary": (
+            "operation",
+            "dict_code",
+            "dict_key",
+            "dict_value",
+            "en",
+            "ja",
+            "ko",
+            "es",
+            "pt",
+        ),
+        "menus": (
+            "level1",
+            "level2",
+            "button_or_button_menu",
+            "menu_code",
+            "route",
+            "en",
+            "ja",
+            "ko",
+            "es",
+            "pt",
+            "sort",
+            "authorization",
+            "resource",
+            "operation_type",
+        ),
+        "i18n": (
+            "operation_type",
+            "level1_key",
+            "level2_key",
+            "zh",
+            "en",
+            "ja",
+            "ko",
+            "es",
+            "pt",
+        ),
+    }
+    result = copy.deepcopy(payload)
+    for section, section_fields in fields.items():
+        for row in result[section]:
+            row["_source"] = {field: row.get(field) for field in section_fields}
+    return result
+
+
+BASE_PAYLOAD = _attach_source_baselines(BASE_PAYLOAD)
+
+
 class FlowxConfigValidatorTests(unittest.TestCase):
     def test_base_payload_is_valid(self):
         self.assertEqual(validate_config_payload(BASE_PAYLOAD), [])
@@ -87,10 +139,40 @@ class FlowxConfigValidatorTests(unittest.TestCase):
         self.assertTrue(any("placeholder" in error for error in errors))
 
     def test_validator_rejects_sensitive_values(self):
-        invalid = dict(BASE_PAYLOAD)
-        invalid["metadata"] = dict(BASE_PAYLOAD["metadata"], connection="jdbc:postgresql://user:pass@db/app")
+        invalid = copy.deepcopy(BASE_PAYLOAD)
+        invalid["metadata"] = dict(
+            BASE_PAYLOAD["metadata"],
+            note="Cookie: session=REVIEW_FAKE_VALUE",
+            connection="jdbc:postgresql://user:pass@db/app",
+        )
         errors = validate_config_payload(invalid)
         self.assertTrue(any("sensitive" in error for error in errors))
+        self.assertFalse(any("REVIEW_FAKE_VALUE" in error for error in errors))
+
+    def test_validator_does_not_echo_invalid_query_status(self):
+        invalid = copy.deepcopy(BASE_PAYLOAD)
+        invalid["metadata"]["query_status"] = "Cookie: session=REVIEW_FAKE_VALUE"
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("invalid value" in error for error in errors))
+        self.assertFalse(any("REVIEW_FAKE_VALUE" in error for error in errors))
+
+    def test_validator_rejects_changed_protected_fields(self):
+        invalid = copy.deepcopy(BASE_PAYLOAD)
+        invalid["menus"][0]["route"] = "/changed"
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("protected" in error for error in errors))
+
+    def test_validator_rejects_overwritten_existing_translation(self):
+        invalid = copy.deepcopy(BASE_PAYLOAD)
+        invalid["dictionary"][0]["en"] = "Overwritten Translation"
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("existing translation" in error for error in errors))
+
+    def test_validator_requires_notice_for_pending_translation(self):
+        invalid = copy.deepcopy(BASE_PAYLOAD)
+        invalid["translation_sources"]["pending"] = 1
+        errors = validate_config_payload(invalid)
+        self.assertTrue(any("translation pending" in error for error in errors))
 
 
 class FlowxConfigRendererTests(unittest.TestCase):
@@ -123,6 +205,15 @@ class FlowxConfigRendererTests(unittest.TestCase):
         report = render_config_document(payload, template)
         self.assertIn("名称 \\| 说明<br>第二行", report)
 
+    def test_render_does_not_reprocess_tokens_inserted_into_values(self):
+        payload = copy.deepcopy(BASE_PAYLOAD)
+        payload["dictionary"][0]["dict_value"] = "{{TRANSLATION_SUMMARY}}"
+        template = (PLUGIN_ROOT / "templates" / "flowx-config-docs.md").read_text(
+            encoding="utf-8"
+        )
+        report = render_config_document(payload, template)
+        self.assertIn("{{TRANSLATION_SUMMARY}}", report)
+
 
 class FlowxConfigSkillTests(unittest.TestCase):
     def test_skill_mentions_fixed_outputs_and_runtime_safety(self):
@@ -144,6 +235,10 @@ class FlowxConfigSkillTests(unittest.TestCase):
             "占位符",
             "flowx-config-",
             "不调用",
+            "<plugin-root>",
+            "翻译待人工确认",
+            "ambiguous",
+            "blocked",
         ):
             self.assertIn(phrase, skill)
 
@@ -206,37 +301,6 @@ class FlowxConfigArtifactTests(unittest.TestCase):
             "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
             "category": "Developer Tools",
         })
-
-
-class FlowxConfigSkillTests(unittest.TestCase):
-    def test_skill_mentions_fixed_outputs_and_runtime_safety(self):
-        skill = (PLUGIN_ROOT / "skills" / "flowx-config-docs" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        for phrase in (
-            "数据库",
-            "配置需求",
-            "数据字典",
-            "菜单权限",
-            "国际化",
-            "英文",
-            "日文",
-            "韩文",
-            "西班牙语",
-            "葡萄牙语",
-            "只读",
-            "候选",
-            "未查询到匹配配置",
-            "占位符",
-            "flowx-config-",
-            "不调用",
-        ):
-            self.assertIn(phrase, skill)
-
-    def test_reference_files_exist(self):
-        reference_root = PLUGIN_ROOT / "skills" / "flowx-config-docs" / "references"
-        for name in ("dbhub-workflow.md", "field-mapping.md", "translation-rules.md"):
-            self.assertTrue((reference_root / name).is_file())
 
 
 if __name__ == "__main__":

@@ -65,6 +65,21 @@ NONEMPTY_FIELDS = {
     "i18n": ("level1_key", "level2_key", "zh"),
 }
 LANGUAGE_FIELDS = ("en", "ja", "ko", "es", "pt")
+PROTECTED_FIELDS = {
+    "dictionary": ("operation", "dict_code", "dict_key", "dict_value"),
+    "menus": (
+        "level1",
+        "level2",
+        "button_or_button_menu",
+        "menu_code",
+        "route",
+        "sort",
+        "authorization",
+        "resource",
+        "operation_type",
+    ),
+    "i18n": ("operation_type", "level1_key", "level2_key", "zh"),
+}
 PLACEHOLDER_RE = re.compile(
     r"\{\{[^{}]+\}\}|\$\{[^{}]+\}|\{[A-Za-z_][A-Za-z0-9_.-]*\}|:[A-Za-z_][A-Za-z0-9_.-]*"
 )
@@ -73,7 +88,7 @@ SENSITIVE_KEY_RE = re.compile(
     re.IGNORECASE,
 )
 SENSITIVE_VALUE_RE = re.compile(
-    r"(?:Bearer\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret)=\S+)",
+    r"(?:Bearer\s+\S+|Basic\s+\S+|Digest\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret|cookie|authorization)\s*[:=]\s*\S+)",
     re.IGNORECASE,
 )
 QUERY_STATUSES = {"complete", "empty", "ambiguous", "blocked", "unresolved"}
@@ -130,6 +145,25 @@ def _placeholder_errors(section: str, index: int, row: dict[str, Any]) -> list[s
     return errors
 
 
+def _source_baseline_errors(section: str, index: int, row: dict[str, Any]) -> list[str]:
+    source = row.get("_source")
+    if not isinstance(source, dict):
+        return [f"{section}[{index}] missing source snapshot"]
+
+    errors: list[str] = []
+    for field in SECTION_FIELDS[section]:
+        if field not in source:
+            errors.append(f"{section}[{index}] source snapshot missing field {field}")
+            continue
+        original = source.get(field)
+        current = row.get(field)
+        if field in PROTECTED_FIELDS[section] and current != original:
+            errors.append(f"{section}[{index}] protected field changed: {field}")
+        elif field in LANGUAGE_FIELDS and _is_nonempty(original) and current != original:
+            errors.append(f"{section}[{index}] existing translation changed: {field}")
+    return errors
+
+
 def validate_config_payload(payload: dict[str, Any]) -> list[str]:
     """Return deterministic validation errors without exposing sensitive values."""
 
@@ -148,9 +182,11 @@ def validate_config_payload(payload: dict[str, Any]) -> list[str]:
     for field in ("database", "scope", "generated_at", "query_status"):
         if not _is_nonempty(metadata.get(field)):
             errors.append(f"metadata.{field} is required")
-    query_status = str(metadata.get("query_status", ""))
-    if query_status and query_status not in QUERY_STATUSES:
-        errors.append(f"metadata.query_status has invalid value {query_status}")
+    query_status = metadata.get("query_status", "")
+    if query_status and (
+        not isinstance(query_status, str) or query_status not in QUERY_STATUSES
+    ):
+        errors.append("metadata.query_status has invalid value")
 
     for section, fields in SECTION_FIELDS.items():
         rows = payload.get(section)
@@ -166,6 +202,7 @@ def validate_config_payload(payload: dict[str, Any]) -> list[str]:
                     field in NONEMPTY_FIELDS[section] and not _is_nonempty(row.get(field))
                 ):
                     errors.append(f"{section}[{index}] missing field {field}")
+            errors.extend(_source_baseline_errors(section, index, row))
             errors.extend(_placeholder_errors(section, index, row))
 
     notices = payload.get("notices")
@@ -180,10 +217,19 @@ def validate_config_payload(payload: dict[str, Any]) -> list[str]:
     if not isinstance(translation_sources, dict):
         errors.append("translation_sources must be an object")
     else:
+        pending = translation_sources.get("pending")
         for source in ("database", "automatic", "pending"):
             value = translation_sources.get(source)
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
                 errors.append(f"translation_sources.{source} must be a non-negative integer")
+        if isinstance(pending, int) and pending > 0:
+            notice_values = [
+                notice
+                for section in ("dictionary", "menus", "i18n")
+                for notice in notices.get(section, [])
+            ] if isinstance(notices, dict) else []
+            if not any("翻译待人工确认" in str(notice) for notice in notice_values):
+                errors.append("translation pending requires a 翻译待人工确认 notice")
 
     for path, value in _scalar_items(payload):
         key = path.rsplit(".", 1)[-1].split("[", 1)[0]
