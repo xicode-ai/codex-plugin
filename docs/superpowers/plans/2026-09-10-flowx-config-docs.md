@@ -461,7 +461,6 @@ SENSITIVE_KEY_RE = re.compile(r"(?:password|passwd|token|cookie|secret|credentia
 SENSITIVE_VALUE_RE = re.compile(r"(?:Bearer\s+\S+|jdbc:[^\s]+|(?:mysql|postgres(?:ql)?|mongodb)://[^\s]+|(?:password|passwd|token|secret)=\S+)", re.IGNORECASE)
 validate_config_payload(payload: dict[str, Any]) -> list[str]
 ```
-```
 
 Implement validation in this order:
 
