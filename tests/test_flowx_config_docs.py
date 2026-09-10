@@ -103,6 +103,7 @@ class FlowxConfigRendererTests(unittest.TestCase):
         self.assertIn("|  | inboundOrder | pendingShelving | 待上架{unit} |", report)
         self.assertIn("/product", report)
         self.assertIn("product:list", report)
+        self.assertIn("数据库已有翻译：1；插件自动翻译：0；翻译待人工确认：0", report)
 
     def test_render_keeps_empty_sections_and_notes(self):
         payload = dict(BASE_PAYLOAD)

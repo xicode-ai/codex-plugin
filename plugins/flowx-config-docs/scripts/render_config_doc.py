@@ -40,7 +40,7 @@ def _notes(items: object) -> str:
 
 def _translation_summary(value: object) -> str:
     sources = value if isinstance(value, dict) else {}
-    return "数据库翻译：{}；自动翻译：{}；待处理：{}".format(
+    return "数据库已有翻译：{}；插件自动翻译：{}；翻译待人工确认：{}".format(
         sources.get("database", 0), sources.get("automatic", 0), sources.get("pending", 0)
     )
 
