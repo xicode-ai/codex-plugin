@@ -123,6 +123,35 @@ class FlowxConfigRendererTests(unittest.TestCase):
         self.assertIn("名称 \\| 说明<br>第二行", report)
 
 
+class FlowxConfigSkillTests(unittest.TestCase):
+    def test_skill_mentions_fixed_outputs_and_runtime_safety(self):
+        skill = (PLUGIN_ROOT / "skills" / "flowx-config-docs" / "SKILL.md").read_text(encoding="utf-8")
+        for phrase in (
+            "数据库",
+            "配置需求",
+            "数据字典",
+            "菜单权限",
+            "国际化",
+            "英文",
+            "日文",
+            "韩文",
+            "西班牙语",
+            "葡萄牙语",
+            "只读",
+            "候选",
+            "未查询到匹配配置",
+            "占位符",
+            "flowx-config-",
+            "不调用",
+        ):
+            self.assertIn(phrase, skill)
+
+    def test_reference_files_exist(self):
+        reference_root = PLUGIN_ROOT / "skills" / "flowx-config-docs" / "references"
+        for name in ("dbhub-workflow.md", "field-mapping.md", "translation-rules.md"):
+            self.assertTrue((reference_root / name).is_file())
+
+
 class FlowxConfigArtifactTests(unittest.TestCase):
     def test_plugin_manifest_is_standalone_and_has_expected_identity(self):
         manifest = json.loads(
@@ -176,6 +205,37 @@ class FlowxConfigArtifactTests(unittest.TestCase):
             "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
             "category": "Developer Tools",
         })
+
+
+class FlowxConfigSkillTests(unittest.TestCase):
+    def test_skill_mentions_fixed_outputs_and_runtime_safety(self):
+        skill = (PLUGIN_ROOT / "skills" / "flowx-config-docs" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        for phrase in (
+            "数据库",
+            "配置需求",
+            "数据字典",
+            "菜单权限",
+            "国际化",
+            "英文",
+            "日文",
+            "韩文",
+            "西班牙语",
+            "葡萄牙语",
+            "只读",
+            "候选",
+            "未查询到匹配配置",
+            "占位符",
+            "flowx-config-",
+            "不调用",
+        ):
+            self.assertIn(phrase, skill)
+
+    def test_reference_files_exist(self):
+        reference_root = PLUGIN_ROOT / "skills" / "flowx-config-docs" / "references"
+        for name in ("dbhub-workflow.md", "field-mapping.md", "translation-rules.md"):
+            self.assertTrue((reference_root / name).is_file())
 
 
 if __name__ == "__main__":
