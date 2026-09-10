@@ -1,11 +1,15 @@
 import json
 import re
+import sys
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = ROOT / "plugins" / "flowx-config-docs"
+
+sys.path.insert(0, str(PLUGIN_ROOT / "scripts"))
+from render_config_doc import render_config_document  # noqa: E402
 
 BASE_PAYLOAD = {
     "metadata": {
@@ -61,6 +65,36 @@ BASE_PAYLOAD = {
     "notices": {"dictionary": [], "menus": [], "i18n": []},
     "translation_sources": {"database": 1, "automatic": 0, "pending": 0},
 }
+
+
+class FlowxConfigRendererTests(unittest.TestCase):
+    def test_render_has_three_tables_and_preserves_protected_values(self):
+        template = (PLUGIN_ROOT / "templates" / "flowx-config-docs.md").read_text(encoding="utf-8")
+        report = render_config_document(BASE_PAYLOAD, template)
+        self.assertEqual(report.count("| 操作 | 字典编码 | 字典key | 字典值 | 英文 | 日文 | 韩文 | 西班牙语 | 葡萄牙语 |"), 1)
+        self.assertIn("|  | productStatus | 1 | 待审核 |", report)
+        self.assertIn("| 商品管理 |  |  | product | /product |", report)
+        self.assertIn("|  | inboundOrder | pendingShelving | 待上架{unit} |", report)
+        self.assertIn("/product", report)
+        self.assertIn("product:list", report)
+
+    def test_render_keeps_empty_sections_and_notes(self):
+        payload = dict(BASE_PAYLOAD)
+        payload["dictionary"] = []
+        payload["notices"] = {"dictionary": ["未查询到匹配配置。"], "menus": [], "i18n": []}
+        template = (PLUGIN_ROOT / "templates" / "flowx-config-docs.md").read_text(encoding="utf-8")
+        report = render_config_document(payload, template)
+        self.assertIn("## 数据字典", report)
+        self.assertIn("> 未查询到匹配配置。", report)
+        self.assertIn("## 菜单权限", report)
+        self.assertIn("## 国际化", report)
+
+    def test_render_escapes_markdown_cells_without_changing_values_semantically(self):
+        payload = dict(BASE_PAYLOAD)
+        payload["i18n"] = [dict(BASE_PAYLOAD["i18n"][0], zh="名称 | 说明\n第二行")]
+        template = (PLUGIN_ROOT / "templates" / "flowx-config-docs.md").read_text(encoding="utf-8")
+        report = render_config_document(payload, template)
+        self.assertIn("名称 \\| 说明<br>第二行", report)
 
 
 class FlowxConfigArtifactTests(unittest.TestCase):
