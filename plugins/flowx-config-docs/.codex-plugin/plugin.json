@@ -1,0 +1,28 @@
+{
+  "name": "flowx-config-docs",
+  "version": "0.1.0",
+  "description": "Query FlowX dictionaries, menu permissions, and internationalization through dbhub and render fixed multilingual Markdown documentation.",
+  "author": {
+    "name": "Xicode AI",
+    "email": "379323664@qq.com"
+  },
+  "homepage": "https://github.com/xicode-ai/codex-plugin",
+  "repository": "https://github.com/xicode-ai/codex-plugin",
+  "license": "MIT",
+  "keywords": ["flowx", "dbhub", "data-dictionary", "menu-permission", "i18n", "markdown"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "FlowX Config Docs",
+    "shortDescription": "Generate fixed multilingual FlowX configuration Markdown",
+    "longDescription": "Queries FlowX data dictionaries, menu permissions, and internationalization data through the user's configured dbhub MCP, fills missing translations, and writes a fixed three-section Markdown document.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": ["Analyze", "Write"],
+    "defaultPrompt": [
+      "查询 FlowX 数据字典、菜单权限和国际化配置并生成 Markdown",
+      "补齐 FlowX 配置缺失的英文、日文、韩文、西班牙语和葡萄牙语翻译",
+      "按固定模板输出 FlowX 配置文档"
+    ],
+    "brandColor": "#0F766E"
+  }
+}
