@@ -1,6 +1,6 @@
 ---
 name: apifox-api-testing
-description: Use when a user provides a PRD and environment identifier and asks Codex to design or execute full-scenario API tests through the Apifox CLI and the configured dbhub MCP.
+description: Use when a user provides a PRD and environment identifier and asks the agent to design or execute full-scenario API tests through the Apifox CLI and the configured dbhub MCP.
 ---
 
 # Apifox API Testing

@@ -1,6 +1,6 @@
 # Apifox API Testing
 
-这是一个通用的 Codex 插件，用于根据 PRD 文档在指定环境设计并执行全场景接口测试。
+这是一个通用的插件，用于根据 PRD 文档在指定环境设计并执行全场景接口测试。
 
 ## 前置条件
 
@@ -53,4 +53,4 @@ codex plugin marketplace add https://github.com/xicode-ai/codex-plugin.git
 codex plugin add apifox-api-testing --marketplace codex-plugin-local
 ```
 
-安装后请新建 Codex 线程，使新的 Skill 配置生效。
+安装后请新建会话线程，使新的 Skill 配置生效。

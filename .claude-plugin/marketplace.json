@@ -1,0 +1,27 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "codex-plugin",
+  "description": "Xicode AI plugins: PRD-driven Apifox API testing and FlowX configuration documentation.",
+  "owner": {
+    "name": "Xicode AI",
+    "email": "379323664@qq.com"
+  },
+  "plugins": [
+    {
+      "name": "apifox-api-testing",
+      "description": "Design and execute PRD-driven full-scenario API tests through the Apifox CLI and dbhub MCP.",
+      "version": "0.2.0",
+      "source": "./plugins/apifox-api-testing",
+      "category": "developer-tools",
+      "keywords": ["apifox", "apifox-cli", "api-testing", "dbhub", "prd", "test-report"]
+    },
+    {
+      "name": "flowx-config-docs",
+      "description": "Query FlowX dictionaries, menu permissions, and internationalization through dbhub and render fixed multilingual Markdown documentation.",
+      "version": "0.1.0",
+      "source": "./plugins/flowx-config-docs",
+      "category": "developer-tools",
+      "keywords": ["flowx", "dbhub", "data-dictionary", "menu-permission", "i18n", "markdown"]
+    }
+  ]
+}

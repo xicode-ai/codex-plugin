@@ -1,0 +1,14 @@
+{
+  "name": "flowx-config-docs",
+  "version": "0.1.0",
+  "description": "Query FlowX dictionaries, menu permissions, and internationalization through dbhub and render fixed multilingual Markdown documentation.",
+  "author": {
+    "name": "Xicode AI",
+    "email": "379323664@qq.com"
+  },
+  "homepage": "https://github.com/xicode-ai/codex-plugin",
+  "repository": "https://github.com/xicode-ai/codex-plugin",
+  "license": "MIT",
+  "keywords": ["flowx", "dbhub", "data-dictionary", "menu-permission", "i18n", "markdown"],
+  "skills": "./skills/"
+}

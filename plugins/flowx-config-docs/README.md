@@ -1,6 +1,6 @@
 # FlowX Config Docs
 
-这是一个独立的 Codex 插件，用于通过当前会话已配置的 dbhub MCP 查询 FlowX 数据字典、菜单权限和国际化配置，并按固定模板生成 Markdown 文档。
+这是一个独立的插件，用于通过当前会话已配置的 dbhub MCP 查询 FlowX 数据字典、菜单权限和国际化配置，并按固定模板生成 Markdown 文档。
 
 ## 使用方式
 
