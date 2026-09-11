@@ -66,7 +66,7 @@ class PluginArtifactTests(unittest.TestCase):
         skill = (PLUGIN_ROOT / "skills" / "apifox-api-testing" / "SKILL.md").read_text(
             encoding="utf-8"
         )
-        for phrase in ("用户测试用例", "provided", "merged", "conflict", "不静默"):
+        for phrase in ("用户测试用例", "provided", "merged", "conflict", "不得静默"):
             self.assertIn(phrase, skill)
 
     def test_manifest_has_no_external_mcp_declaration(self):
@@ -184,6 +184,83 @@ class PluginArtifactTests(unittest.TestCase):
         self.assertIn("TC-001", report)
         self.assertIn("API-USER-002", report)
         self.assertIn("Expected status differs from contract", report)
+
+    def test_render_report_includes_professional_sections(self):
+        summary = {
+            "metadata": {
+                "task_name": "OMS 回归",
+                "environment": "test-oms",
+                "project_name": "OMS",
+                "apifox_project_id": 8120721,
+                "apifox_branch": "ai/20260911-from-main-regression",
+                "apifox_cli_version": "2.2.9",
+                "plugin_version": "0.2.0",
+                "execution_duration": "3m20s",
+                "apifox_report_files": ["apifox-reports/report.html", "apifox-reports/junit.xml"],
+            },
+            "counts": {
+                "total": 2,
+                "passed": 1,
+                "failed": 1,
+                "blocked": 0,
+                "skipped": 0,
+                "errors": 0,
+                "retries": 1,
+                "api_assertions_passed": 2,
+                "api_assertions_failed": 1,
+                "db_assertions_passed": 1,
+                "db_assertions_failed": 0,
+            },
+            "requirements": [
+                {"id": "REQ-001", "goal": "创建入库单", "cases": ["API-001"], "status": "covered"},
+                {"id": "REQ-002", "goal": "查询入库单", "cases": [], "status": "pending"},
+            ],
+            "cases": [
+                {
+                    "id": "API-001",
+                    "businessFlow": "创建入库单",
+                    "endpoint": {"method": "POST", "path": "/biz/inboundOrder"},
+                    "apifox": {"caseId": 400273209, "scenarioId": 637132, "branch": "ai/regression"},
+                    "preconditions": "测试租户已存在",
+                    "steps": [{"action": "提交入库单", "detail": "返回单号"}],
+                    "executionStatus": "failed",
+                    "assertions": {
+                        "api": [
+                            {"expression": "responseJson.code", "expected": 0, "actual": 500, "status": "failed"}
+                        ],
+                        "db": [
+                            {"expression": "count(*) where status='CREATED'", "expected": 1, "actual": 1, "status": "passed"}
+                        ],
+                    },
+                    "retry": 0,
+                    "durationMs": 850,
+                }
+            ],
+            "defects": [
+                {
+                    "title": "创建入库单返回 500",
+                    "severity": "HIGH",
+                    "description": "服务端异常",
+                    "caseRefs": ["API-001"],
+                    "suggestion": "检查库存服务依赖",
+                }
+            ],
+            "blockers": [],
+            "cleanup": [],
+            "conclusion": {"status": "FAIL", "reason": "One API assertion failed."},
+        }
+        template = (PLUGIN_ROOT / "templates" / "test-report.md").read_text(encoding="utf-8")
+        report = render_report(summary, template)
+        self.assertIn("50.0%", report)
+        self.assertIn("3m20s", report)
+        self.assertIn("1/2（50.0%）", report)
+        self.assertIn("用例 #400273209", report)
+        self.assertIn("场景 #637132", report)
+        self.assertIn("[FAILED] responseJson.code", report)
+        self.assertIn("（期望 0，实际 500）", report)
+        self.assertIn("[HIGH] 创建入库单返回 500", report)
+        self.assertIn("apifox-reports/report.html", report)
+        self.assertIn("共 2 条用例", report)
 
 
 if __name__ == "__main__":

@@ -4,12 +4,12 @@
 
 ## 前置条件
 
-插件运行时需要用户已经在 Codex 中配置：
+插件运行时需要：
 
-- Apifox MCP：发现接口、读取接口契约和执行接口。
+- Apifox CLI：发现接口、读取接口契约、创建测试用例与测试场景、在指定环境执行并生成报告。插件会在预检时检查 `apifox` 命令是否可用（缺失时经用户同意执行 `npm install -g apifox-cli`），并检查环境变量 `APIFOX_TOKEN`（Apifox 账号的 API 访问令牌，`APS-` 开头）完成 `apifox login`。
 - dbhub MCP：查询数据库、准备测试数据、校验 API 结果和清理测试数据。
 
-插件不携带或保存 Apifox Token、数据库账号密码、Cookie、固定项目 ID 或固定环境配置。
+插件不依赖 Apifox MCP；不携带或保存 Apifox Token、数据库账号密码、Cookie、固定项目 ID 或固定环境配置。
 
 ## 使用方式
 
@@ -23,7 +23,7 @@
 <可选的 Markdown 表格、YAML、JSON、编号列表或自然语言测试用例>
 ```
 
-插件会先校验两个 MCP 是否可用，并确认环境标识能够映射到同一个 Apifox/dbhub 测试环境。
+插件会先校验 Apifox CLI（安装、`APIFOX_TOKEN` 登录）和 dbhub MCP 是否可用，并确认环境标识能够映射到同一个 Apifox/dbhub 测试环境。
 
 ## 安全规则
 

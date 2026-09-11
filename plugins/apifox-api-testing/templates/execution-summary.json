@@ -1,5 +1,28 @@
 {
-  "metadata": {},
+  "metadata": {
+    "task_name": "",
+    "prd_id": "",
+    "project_name": "",
+    "environment": "",
+    "execution_time": "",
+    "execution_duration": "",
+    "apifox_project_id": "",
+    "apifox_branch": "",
+    "apifox_cli_version": "",
+    "plugin_version": "",
+    "report_version": "1.0",
+    "generated_by": "apifox-api-testing plugin",
+    "review_status": "draft",
+    "distribution_scope": "",
+    "executive_summary": "",
+    "prd_input_summary": "provided",
+    "apifox_preflight": "",
+    "dbhub_preflight": "",
+    "tool_summary": "",
+    "database_index": "",
+    "apifox_report_files": [],
+    "rules_version": "0.2.0"
+  },
   "counts": {
     "total": 0,
     "passed": 0,
@@ -7,6 +30,7 @@
     "blocked": 0,
     "skipped": 0,
     "errors": 0,
+    "retries": 0,
     "api_assertions_passed": 0,
     "api_assertions_failed": 0,
     "db_assertions_passed": 0,
@@ -24,8 +48,38 @@
   "defects": [],
   "blockers": [],
   "cleanup": [],
+  "recommendations": [],
   "conclusion": {
     "status": "BLOCKED",
     "reason": "No test cases have been executed."
+  },
+  "_caseSchema": {
+    "id": "API-001",
+    "userCaseId": "",
+    "source": "provided|generated|merged|conflict",
+    "category": "",
+    "businessFlow": "",
+    "endpoint": { "method": "GET", "path": "/example" },
+    "apifox": { "caseId": 0, "scenarioId": 0, "branch": "" },
+    "preconditions": "",
+    "steps": [{ "action": "", "detail": "" }],
+    "executionStatus": "planned|passed|failed|blocked|skipped|error",
+    "assertions": {
+      "api": [{ "expression": "responseJson.code", "expected": 0, "actual": 0, "status": "passed" }],
+      "db": [{ "expression": "count(*) where status='PAID'", "expected": 1, "actual": 1, "status": "passed" }]
+    },
+    "apiResult": "",
+    "databaseResult": "",
+    "retry": 0,
+    "durationMs": 0,
+    "evidence": "",
+    "cleanup": ""
+  },
+  "_defectSchema": {
+    "title": "",
+    "severity": "HIGH|MEDIUM|LOW",
+    "description": "",
+    "caseRefs": [],
+    "suggestion": ""
   }
 }
