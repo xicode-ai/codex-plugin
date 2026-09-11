@@ -1,0 +1,14 @@
+{
+  "name": "apifox-api-testing",
+  "version": "0.1.1",
+  "description": "Design and execute PRD-driven full-scenario API tests through Apifox MCP and dbhub MCP.",
+  "author": {
+    "name": "Xicode AI",
+    "email": "379323664@qq.com"
+  },
+  "homepage": "https://github.com/xicode-ai/codex-plugin",
+  "repository": "https://github.com/xicode-ai/codex-plugin",
+  "license": "MIT",
+  "keywords": ["apifox", "api-testing", "dbhub", "prd", "test-report"],
+  "skills": "./skills/"
+}
