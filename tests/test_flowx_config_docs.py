@@ -295,7 +295,7 @@ class FlowxConfigArtifactTests(unittest.TestCase):
         self.assertIn("apifox-api-testing", names)
         self.assertIn("flowx-config-docs", names)
         self.assertEqual(names.count("flowx-config-docs"), 1)
-        self.assertEqual(marketplace["plugins"][-1], {
+        self.assertEqual(next(entry for entry in marketplace["plugins"] if entry["name"] == "flowx-config-docs"), {
             "name": "flowx-config-docs",
             "source": {"source": "local", "path": "./plugins/flowx-config-docs"},
             "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},

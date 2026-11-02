@@ -12,7 +12,13 @@
       "version": "0.1.1",
       "source": "./plugins/apifox-api-testing",
       "category": "developer-tools",
-      "keywords": ["apifox", "api-testing", "dbhub", "prd", "test-report"]
+      "keywords": [
+        "apifox",
+        "api-testing",
+        "dbhub",
+        "prd",
+        "test-report"
+      ]
     },
     {
       "name": "flowx-config-docs",
@@ -20,7 +26,27 @@
       "version": "0.1.0",
       "source": "./plugins/flowx-config-docs",
       "category": "developer-tools",
-      "keywords": ["flowx", "dbhub", "data-dictionary", "menu-permission", "i18n", "markdown"]
+      "keywords": [
+        "flowx",
+        "dbhub",
+        "data-dictionary",
+        "menu-permission",
+        "i18n",
+        "markdown"
+      ]
+    },
+    {
+      "name": "obsidian-kb-maintenance",
+      "description": "Maintain an Obsidian knowledge base with the official CLI, evidence-backed Wiki review and daily reading guides.",
+      "version": "0.1.0",
+      "source": "./plugins/obsidian-kb-maintenance",
+      "category": "productivity",
+      "keywords": [
+        "obsidian",
+        "knowledge-base",
+        "wiki",
+        "ima"
+      ]
     }
   ]
 }

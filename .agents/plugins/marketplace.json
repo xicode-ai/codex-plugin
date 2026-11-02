@@ -27,6 +27,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Developer Tools"
+    },
+    {
+      "name": "obsidian-kb-maintenance",
+      "source": {
+        "source": "local",
+        "path": "./plugins/obsidian-kb-maintenance"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }
