@@ -1,0 +1,8 @@
+{
+  "name": "source-business-prd",
+  "version": "0.1.0",
+  "description": "Reverse-engineer evidence-backed business knowledge and as-is PRDs across source repositories with optional database observations.",
+  "author": {"name": "Xicode AI"},
+  "license": "MIT",
+  "skills": "./skills/"
+}

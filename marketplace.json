@@ -1,6 +1,6 @@
 {
   "name": "codex-plugin",
-  "description": "Xicode AI plugins: PRD-driven Apifox API testing and FlowX configuration documentation.",
+  "description": "Xicode AI plugins for testing, configuration documentation, knowledge maintenance and source-driven business PRDs.",
   "owner": {
     "name": "Xicode AI",
     "email": "379323664@qq.com"
@@ -34,6 +34,14 @@
         "i18n",
         "markdown"
       ]
+    },
+    {
+      "name": "source-business-prd",
+      "description": "Reverse-engineer evidence-backed business knowledge and as-is PRDs across source repositories with optional database observations.",
+      "version": "0.1.0",
+      "source": "./plugins/source-business-prd",
+      "category": "developer-tools",
+      "keywords": ["business-knowledge", "prd", "reverse-engineering", "multi-repo", "serena", "dbhub"]
     },
     {
       "name": "obsidian-kb-maintenance",

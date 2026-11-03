@@ -1,0 +1,18 @@
+{
+  "name": "source-business-prd",
+  "version": "0.1.0",
+  "description": "Reverse-engineer evidence-backed business knowledge and as-is PRDs across source repositories with optional database observations.",
+  "author": {"name": "Xicode AI"},
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Source Business PRD",
+    "shortDescription": "Understand business behavior from source and data",
+    "longDescription": "Build traceable business knowledge, current-state PRDs and diagrams from one or multiple repositories, keeping product hypotheses distinct from implementation facts.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": ["Analyze", "Write"],
+    "defaultPrompt": ["使用 source-business-prd 分析指定代码仓库，输出业务知识、现状 PRD、必要图表和证据索引。"],
+    "brandColor": "#2563EB"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "run": {
+    "id": "R-EXAMPLE",
+    "system": "格式演示系统",
+    "scope": "演示未读取源码时的草稿检查点",
+    "audience": "产品经理",
+    "generated_at": "2026-11-03T10:00:00+08:00",
+    "status": "draft",
+    "discovery_complete": false,
+    "limitations": ["这是结构示例，未读取业务源码或数据库，不能作为系统结论。"],
+    "next_actions": ["替换实际仓库路径与快照，盘点入口后开始取证。"]
+  },
+  "repositories": [
+    {"id": "REPO-EXAMPLE", "root": "/example/orders", "commit": "unversioned", "dirty": true}
+  ],
+  "data_sources": [],
+  "queries": [],
+  "evidence": [],
+  "claims": [
+    {
+      "id": "C-QUESTION",
+      "kind": "question",
+      "text": "待读取源码确认系统业务入口和用户目标。",
+      "scope": "演示草稿",
+      "evidence_ids": [],
+      "counter_evidence_ids": [],
+      "limitations": ["尚无业务证据。"]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-UNEXPLORED",
+      "name": "待发现业务场景",
+      "actor": "待确认",
+      "trigger": "待确认",
+      "preconditions": [],
+      "claim_ids": ["C-QUESTION"],
+      "steps": [{"text": "尚待取证，不代表实际系统步骤。", "claim_ids": ["C-QUESTION"]}],
+      "states": [],
+      "exceptions": [],
+      "handoff_ids": [],
+      "closure": "gap",
+      "outcome": "尚未确认业务结果",
+      "gap": "缺少源码取证。"
+    }
+  ],
+  "handoffs": [],
+  "coverage": [
+    {"id": "V-REPO", "kind": "repository", "subject_id": "REPO-EXAMPLE", "status": "unseen"},
+    {"id": "V-SCENARIO", "kind": "scenario", "subject_id": "S-UNEXPLORED", "status": "unseen"}
+  ],
+  "documents": []
+}
