@@ -1,6 +1,6 @@
 {
   "name": "codex-plugin",
-  "description": "Xicode AI plugins for testing, configuration documentation, knowledge maintenance and source-driven business PRDs.",
+  "description": "Xicode AI plugins for testing, configuration documentation, knowledge maintenance, business PRDs and knowledge-base Markdown.",
   "owner": {
     "name": "Xicode AI",
     "email": "379323664@qq.com"
@@ -44,9 +44,25 @@
       "keywords": ["business-knowledge", "prd", "reverse-engineering", "multi-repo", "serena", "dbhub"]
     },
     {
+      "name": "source-business-knowledge",
+      "description": "Generate structured, business-only Markdown knowledge from source repositories, with technical evidence kept separately.",
+      "version": "0.2.0",
+      "source": "./plugins/source-business-knowledge",
+      "category": "developer-tools",
+      "keywords": [
+        "business-knowledge",
+        "knowledge-base",
+        "markdown",
+        "reverse-engineering",
+        "multi-repo",
+        "serena",
+        "dbhub"
+      ]
+    },
+    {
       "name": "obsidian-kb-maintenance",
-      "description": "Maintain an Obsidian knowledge base with the official CLI, evidence-backed Wiki review and daily reading guides.",
-      "version": "0.1.0",
+      "description": "Maintain Obsidian note properties, Dataview directory indexes, evidence-backed Wiki pages and daily reading guides through the official CLI.",
+      "version": "0.3.0",
       "source": "./plugins/obsidian-kb-maintenance",
       "category": "productivity",
       "keywords": [
@@ -54,6 +70,20 @@
         "knowledge-base",
         "wiki",
         "ima"
+      ]
+    },
+    {
+      "name": "outline-obsidian-sync",
+      "description": "Mirror an Outline knowledge base into Obsidian incrementally with local attachments, then run existing knowledge maintenance.",
+      "version": "0.1.1",
+      "source": "./plugins/outline-obsidian-sync",
+      "category": "productivity",
+      "keywords": [
+        "outline",
+        "obsidian",
+        "knowledge-base",
+        "incremental-sync",
+        "attachments"
       ]
     }
   ]

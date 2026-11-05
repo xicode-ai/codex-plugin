@@ -1,0 +1,25 @@
+{
+  "name": "source-business-knowledge",
+  "version": "0.2.0",
+  "description": "Generate structured, business-only Markdown knowledge from source repositories; keep technical evidence in separate analysis records.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Source Business Knowledge",
+    "shortDescription": "Turn source code into business knowledge Markdown",
+    "longDescription": "Explain system purpose, modules, workflows, rules and exceptions in business-only Markdown with meaningful sections and prose. Keep source evidence private in analysis records.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Analyze",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "使用 source-business-knowledge 分析指定仓库，输出有业务小节和说明段落的纯业务知识 Markdown；正文不含代码、实现细节或源码引用，调查证据另存 analysis/。"
+    ],
+    "brandColor": "#2563EB"
+  }
+}

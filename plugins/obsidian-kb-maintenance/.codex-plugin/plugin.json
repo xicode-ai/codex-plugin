@@ -1,7 +1,7 @@
 {
   "name": "obsidian-kb-maintenance",
-  "version": "0.1.0",
-  "description": "Maintain an Obsidian knowledge base with the official CLI, evidence-backed Wiki review and daily reading guides.",
+  "version": "0.3.0",
+  "description": "Maintain Obsidian note properties, Dataview directory indexes, evidence-backed Wiki pages and daily reading guides through the official CLI.",
   "author": {
     "name": "Xicode AI"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Obsidian Knowledge Maintenance",
-    "shortDescription": "Maintain an evidence-backed Obsidian knowledge base",
-    "longDescription": "Maintain an Obsidian knowledge base with the official CLI, evidence-backed Wiki review and daily reading guides.",
+    "shortDescription": "Maintain note properties, Dataview indexes and knowledge",
+    "longDescription": "Maintain Obsidian note properties, Dataview directory indexes, evidence-backed Wiki pages and daily reading guides through the official CLI.",
     "developerName": "Xicode AI",
     "category": "Productivity",
     "capabilities": [

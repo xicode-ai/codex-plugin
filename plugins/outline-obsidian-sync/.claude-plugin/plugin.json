@@ -1,0 +1,10 @@
+{
+  "name": "outline-obsidian-sync",
+  "version": "0.1.1",
+  "description": "Mirror an Outline knowledge base into Obsidian incrementally with local attachments, then run existing knowledge maintenance.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/"
+}

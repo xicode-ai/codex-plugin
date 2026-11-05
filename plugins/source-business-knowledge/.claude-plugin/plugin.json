@@ -1,0 +1,10 @@
+{
+  "name": "source-business-knowledge",
+  "version": "0.2.0",
+  "description": "Generate structured, business-only Markdown knowledge from source repositories; keep technical evidence in separate analysis records.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/"
+}
