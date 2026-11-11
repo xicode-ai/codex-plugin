@@ -39,6 +39,42 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "outline-intent-sync",
+      "source": {
+        "source": "local",
+        "path": "./plugins/outline-intent-sync"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "outline-intent-review",
+      "source": {
+        "source": "local",
+        "path": "./plugins/outline-intent-review"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "outline-intent-revise",
+      "source": {
+        "source": "local",
+        "path": "./plugins/outline-intent-revise"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
     }
   ]
 }

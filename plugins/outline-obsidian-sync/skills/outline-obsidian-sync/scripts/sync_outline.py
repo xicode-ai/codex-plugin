@@ -18,6 +18,7 @@ from outline_client import OutlineClient, OutlineError, origin
 from markdown_links import rewrite
 from media_store import MediaStore
 from legacy_export import reuse_assets
+from comments import normalize_comments, fingerprint, render_comments, plan_comments, RENDER_VERSION
 
 
 def digest(data):
@@ -254,6 +255,17 @@ def sync(client, target, *, progress=None, reuse_export=None):
                         url_paths[urllib.parse.urlsplit(absolute).path.rstrip('/')] = path
             url_paths['/doc/' + doc_id] = path
         layout_hash = digest(json.dumps(url_paths, sort_keys=True, ensure_ascii=False).encode())
+        comments_by_doc = {doc_id: [] for doc_id in paths}
+        result['comments_complete'] = False
+        try:
+            rows = normalize_comments(client.pages('comments.list', sort='createdAt', direction='ASC'))
+            for row in rows:
+                if row['documentId'] in comments_by_doc:
+                    comments_by_doc[row['documentId']].append(row)
+            result['comments_complete'] = True
+            result['comments'] = sum(len(rows) for rows in comments_by_doc.values())
+        except OutlineError as error:
+            result['errors'].append({'reason': 'Comments incomplete: ' + str(error)})
         state['tree'] = [{'collection': {'id': c['id'], 'name': c['name']}, 'documents': trees.get(c['id'], [])} for c in collections]
         if reuse_export is not None:
             def save_reused(relative, body, sha):
@@ -297,7 +309,13 @@ def sync(client, target, *, progress=None, reuse_export=None):
                     if journaled_hash and existing_hash == journaled_hash and old['path'] == relative:
                         old_hash = existing_hash
                 assets_ok = old is not None and all(read_hash(contained(root, item['path'])) == item['sha256'] for item in old.get('assets', []))
-                if old and any(value is not None for value in version(doc).values()) and old.get('media_complete', True) and old['path'] == relative and old['version'] == version(doc) and old.get('layout_hash') == layout_hash and read_hash(path) == old['sha256'] and assets_ok:
+                if not result['comments_complete'] and old:
+                    result['skipped'] += 1
+                    continue
+                comment_rows = comments_by_doc[doc_id]
+                comment_hash = fingerprint(comment_rows)
+                comments_ok = old and old.get('comments_complete') and old.get('comments_hash') == comment_hash and old.get('comment_render_version') == RENDER_VERSION
+                if comments_ok and old and any(value is not None for value in version(doc).values()) and old.get('media_complete', True) and old['path'] == relative and old['version'] == version(doc) and old.get('layout_hash') == layout_hash and read_hash(path) == old['sha256'] and assets_ok:
                     result['skipped'] += 1
                     continue
                 if 'text' not in doc:
@@ -336,7 +354,29 @@ def sync(client, target, *, progress=None, reuse_export=None):
                         state['assets'][key] = item
                     assets[key] = item
                     return urllib.parse.quote(os.path.relpath(item['path'], Path(relative).parent), safe='/')
-                rendered = rewrite(doc['text'], replace).encode()
+                markdown = rewrite(doc['text'], replace)
+                rich_data, anchor_complete = None, True
+                if comment_rows:
+                    try:
+                        rich = client.rich_document(doc_id)
+                        if version(rich) != version(doc):
+                            raise OutlineError('Document changed while fetching comment anchors; retry')
+                        rich_data = rich.get('data')
+                    except OutlineError as error:
+                        anchor_complete = False
+                        result['errors'].append({'document_id': doc_id, 'reason': 'Comment anchors incomplete: ' + str(error)})
+                placements=plan_comments(markdown,rich_data,comment_rows)
+                markdown, unmapped = render_comments(markdown, rich_data, comment_rows, replace, placements=placements)
+                rendered = markdown.encode()
+                comment_snapshot = None
+                if result['comments_complete']:
+                    comment_snapshot = '.outline-sync/comments/' + digest(doc_id.encode()) + '/' + comment_hash + '.json'
+                    snapshot = contained(root, comment_snapshot)
+                    body = (json.dumps(comment_rows, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()
+                    if snapshot.exists() and snapshot.read_bytes() != body:
+                        raise OutlineError('Comment snapshot conflict')
+                    if not snapshot.exists():
+                        atomic_write(snapshot, body)
                 original_hash = digest(doc['text'].encode())
                 original_path = '.outline-sync/originals/' + digest(doc_id.encode()) + '/' + original_hash + '.md'
                 original = contained(root, original_path)
@@ -353,6 +393,12 @@ def sync(client, target, *, progress=None, reuse_export=None):
                     'path': relative, 'title': doc['title'], 'version': version(doc), 'sha256': new_hash,
                     'layout_hash': layout_hash, 'assets': list(assets.values()), 'original': original_path,
                     'media_complete': not media_errors, 'media_errors': media_errors,
+                    'comments_hash': comment_hash if result['comments_complete'] else None,
+                    'comments_snapshot': comment_snapshot,
+                    'comments_complete': result['comments_complete'] and anchor_complete,
+                    'comment_render_version': RENDER_VERSION,
+                    'unmapped_comments': unmapped,
+                    'comment_placements': placements,
                     'created_at': doc.get('createdAt'), 'source_url': urllib.parse.urljoin(client.base_url, doc.get('url', '')).split('?')[0].split('#')[0],
                     'first_seen_at': old.get('first_seen_at') if old else started,
                     'baseline_complete_before_discovery': old.get('baseline_complete_before_discovery', False) if old else baseline_before,

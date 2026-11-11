@@ -1,0 +1,25 @@
+{
+  "name": "outline-intent-review",
+  "version": "0.1.0",
+  "description": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "评审 Outline Intent",
+    "shortDescription": "结合当前代码、可选产品 PRD 和规范，对他人的 Outline intent 定位评审",
+    "longDescription": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "使用 $outline-intent-review 评审我提供的 Outline intent，结合当前仓库并发表评论。"
+    ],
+    "brandColor": "#4F46E5"
+  }
+}

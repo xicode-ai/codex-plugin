@@ -1,0 +1,10 @@
+{
+  "name": "outline-intent-revise",
+  "version": "0.1.0",
+  "description": "Reassess existing Outline intent comments and, after approval, align local Trellis artifacts and sync documents and replies.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/"
+}

@@ -13,7 +13,14 @@
       "version": "0.2.0",
       "source": "./plugins/apifox-api-testing",
       "category": "developer-tools",
-      "keywords": ["apifox", "apifox-cli", "api-testing", "dbhub", "prd", "test-report"]
+      "keywords": [
+        "apifox",
+        "apifox-cli",
+        "api-testing",
+        "dbhub",
+        "prd",
+        "test-report"
+      ]
     },
     {
       "name": "flowx-config-docs",
@@ -21,7 +28,53 @@
       "version": "0.1.0",
       "source": "./plugins/flowx-config-docs",
       "category": "developer-tools",
-      "keywords": ["flowx", "dbhub", "data-dictionary", "menu-permission", "i18n", "markdown"]
+      "keywords": [
+        "flowx",
+        "dbhub",
+        "data-dictionary",
+        "menu-permission",
+        "i18n",
+        "markdown"
+      ]
+    },
+    {
+      "name": "outline-intent-sync",
+      "description": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-sync",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "sync"
+      ]
+    },
+    {
+      "name": "outline-intent-review",
+      "description": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-review",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "review"
+      ]
+    },
+    {
+      "name": "outline-intent-revise",
+      "description": "Reassess existing Outline intent comments and, after approval, align local Trellis artifacts and sync documents and replies.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-revise",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "review"
+      ]
     }
   ]
 }

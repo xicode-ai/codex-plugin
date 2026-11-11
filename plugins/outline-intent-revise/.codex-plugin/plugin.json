@@ -1,0 +1,25 @@
+{
+  "name": "outline-intent-revise",
+  "version": "0.1.0",
+  "description": "Reassess existing Outline intent comments and, after approval, align local Trellis artifacts and sync documents and replies.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "复核并回复 Intent 评审",
+    "shortDescription": "复核评论真实性，授权后对齐 Trellis 全套规划并同步 Outline 和逐条回复",
+    "longDescription": "Reassess existing Outline intent comments and, after approval, align local Trellis artifacts and sync documents and replies.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "使用 $outline-intent-revise 复核我提供的 Outline intent 评论，先输出改进计划和回复草稿供我授权。"
+    ],
+    "brandColor": "#4F46E5"
+  }
+}

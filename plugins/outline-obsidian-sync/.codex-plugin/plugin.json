@@ -1,7 +1,7 @@
 {
   "name": "outline-obsidian-sync",
-  "version": "0.1.1",
-  "description": "Mirror an Outline knowledge base into Obsidian incrementally with local attachments, then run existing knowledge maintenance.",
+  "version": "0.3.0",
+  "description": "Incrementally mirror Outline documents, attachments and threaded comments in Document Comments format into Obsidian, then run existing knowledge maintenance.",
   "author": {
     "name": "Xicode AI"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Outline → Obsidian",
     "shortDescription": "增量同步企业知识库并维护 Obsidian",
-    "longDescription": "Mirror an Outline knowledge base into Obsidian incrementally with local attachments, then run existing knowledge maintenance.",
+    "longDescription": "Incrementally mirror Outline documents, attachments and threaded comments in Document Comments format into Obsidian, then run existing knowledge maintenance.",
     "developerName": "Xicode AI",
     "category": "Productivity",
     "capabilities": [

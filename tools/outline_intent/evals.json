@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "side_effect_policy": "offline-only; no live Outline mutation or source-repository edits",
+  "scenarios": [
+    {
+      "id": "sync-scaffold-and-missing-token",
+      "skill": "outline-intent-sync",
+      "prompt": "同步本地Trellis PRD到指定Outline目录，八节齐全但需求只有需求1、验收只有Given ... When ... Then ...，配置缺token。",
+      "baseline_observed": "Evaluator would permit sparse content after headings check, blocked only by missing token.",
+      "green_observed": "Evaluator rejects scaffold content independently of credential blocker; asks secure token and explicit destination, never invents content.",
+      "variants": ["token present but no directory link", "source complete but remote version moved and rich anchors exist"],
+      "status": "guidance-forward-test-passed"
+    },
+    {
+      "id": "review-repository-access-and-optional-prd",
+      "skill": "outline-intent-review",
+      "prompt": "评审他人Outline技术intent；八节正确、正文无H1、代码块有H2，无产品PRD，GitLab URL可见但本地仓库不可访问。",
+      "baseline_observed": "Evaluator would publish a bounded source-unverified review comment.",
+      "green_observed": "Evaluator asks in chat for accessible checkout and pauses detailed source review; invalid-template variant can post format-only finding; technical PRD absence does not block review with accessible source.",
+      "refinement": "Clarified missing-repository prompt belongs in chat, not a code-defect comment.",
+      "status": "guidance-forward-test-passed"
+    },
+    {
+      "id": "revise-approval-alignment-and-timeout",
+      "skill": "outline-intent-revise",
+      "prompt": "复核四条评论两真两假，PRD/design/implement不一致，远端revision已推进；先计划和回复草稿，用户尚未授权。",
+      "baseline_observed": "Evaluator keeps writes gated on authorization, but lacks explicit complete-artifact alignment and uncertain reply-ID recovery procedure.",
+      "green_observed": "Evaluator prepares complete staged drafts and finding-to-artifact mapping before approval, rechecks source/remote snapshots afterward and keeps comments open.",
+      "refinements": ["Persist client UUID/action key before create; uncertain write requires readback and unique reconciliation or stop", "Changed proposed text or reply content requires renewed approval; irrelevant source changes do not require repeated authorization of identical actions"],
+      "status": "guidance-forward-test-passed-with-refinements"
+    }
+  ],
+  "limitations": [
+    "Small qualitative forward tests, not statistical evidence of model reliability",
+    "Digest and declared alignment cannot prove human authorization or semantic correctness",
+    "Live deployment API compatibility, permissions, rich-anchor retention and real write recovery not exercised"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "同步 Intent 到 Outline"
+  short_description: "校验本地 Trellis intent 内容与模板后，同步到指定 Outline 目录"
+  default_prompt: "使用 $outline-intent-sync 校验我的本地 Trellis PRD，并同步到我提供的 Outline 目录。"

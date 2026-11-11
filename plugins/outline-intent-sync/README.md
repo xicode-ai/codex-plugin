@@ -1,0 +1,21 @@
+# 同步 Intent 到 Outline
+
+独立插件 `outline-intent-sync`，支持仓库现有的 Codex 与 Claude 插件包装。
+
+调用：
+
+```text
+使用 $outline-intent-sync 校验我的本地 Trellis PRD，并同步到我提供的 Outline 目录。
+```
+
+先提供目标 Outline 文档或目录链接。运行时检查 `OUTLINE_URL` / `OUTLINE_API_TOKEN` 或显式配置文件；未配置时提示安全输入，不输出密钥。产品 PRD 对纯技术任务可不适用，详细代码评审需要可访问代码目录。
+
+入口：[SKILL.md](skills/outline-intent-sync/SKILL.md)。模板、流程契约与 Python 标准库运行脚本随包提供，不依赖其他插件安装或作者机器路径。
+
+```bash
+python3 <skill-dir>/scripts/outline_intent.py --help
+```
+
+创建本插件不代表已连接或修改真实 Outline。复核先给计划与回复草稿，用户授权后才改任务/正文及回复；同步与初次评论依据该次明确请求。脚本 digest 绑定计划，不能替代真实用户授权。
+
+维护者修改共享资源后执行 `python3 tools/bundle_outline_intent.py`，再运行 `--check` 及 `python3 -m unittest discover -s tests -p 'test_outline_intent*.py'`。

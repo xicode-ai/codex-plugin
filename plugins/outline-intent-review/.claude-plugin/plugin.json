@@ -1,0 +1,10 @@
+{
+  "name": "outline-intent-review",
+  "version": "0.1.0",
+  "description": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/"
+}

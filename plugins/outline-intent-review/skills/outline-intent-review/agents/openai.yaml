@@ -1,0 +1,4 @@
+interface:
+  display_name: "评审 Outline Intent"
+  short_description: "结合当前代码、可选产品 PRD 和规范，对他人的 Outline intent 定位评审"
+  default_prompt: "使用 $outline-intent-review 评审我提供的 Outline intent，结合当前仓库并发表评论。"

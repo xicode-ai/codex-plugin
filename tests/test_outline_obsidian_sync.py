@@ -77,9 +77,15 @@ class FakeClient:
         self.docs['d1']['parentDocumentId'] = None
         self.docs['d2']['parentDocumentId'] = 'd1'
         self.fail_image = False
+        self.comments = []
+
+    def rich_document(self, doc_id):
+        return self.docs[doc_id]
 
     def pages(self, name, **params):
         self.calls[name] += 1
+        if name == 'comments.list':
+            return self.comments
         return self.collections if name == 'collections.list' else list(self.docs.values())
 
     def call(self, name, params):

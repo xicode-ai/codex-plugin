@@ -1,0 +1,25 @@
+{
+  "name": "outline-intent-sync",
+  "version": "0.1.0",
+  "description": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "同步 Intent 到 Outline",
+    "shortDescription": "校验本地 Trellis intent 内容与模板后，同步到指定 Outline 目录",
+    "longDescription": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
+    "developerName": "Xicode AI",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "使用 $outline-intent-sync 校验我的本地 Trellis PRD，并同步到我提供的 Outline 目录。"
+    ],
+    "brandColor": "#4F46E5"
+  }
+}

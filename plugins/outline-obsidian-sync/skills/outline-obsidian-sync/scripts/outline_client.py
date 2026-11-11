@@ -37,7 +37,7 @@ class SafeRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class OutlineClient:
-    READ_METHODS = {'collections.list', 'collections.documents', 'documents.list', 'documents.info', 'attachments.info'}
+    READ_METHODS = {'collections.list', 'collections.documents', 'documents.list', 'documents.info', 'attachments.info', 'comments.list'}
 
     def __init__(self, base_url, token, *, timeout=30, retries=3, allow_http=False, page_size=25):
         p = urllib.parse.urlsplit(base_url)
@@ -52,7 +52,7 @@ class OutlineClient:
         self.api_opener = urllib.request.build_opener(SafeRedirect(self.base_url, api=True, allow_http=allow_http))
         self.file_opener = urllib.request.build_opener(SafeRedirect(self.base_url, allow_http=allow_http))
 
-    def request(self, url, data=None, *, api=False, max_bytes=64 * 1024 * 1024):
+    def request(self, url, data=None, *, api=False, max_bytes=64 * 1024 * 1024, api_version=None):
         p = urllib.parse.urlsplit(url)
         if p.scheme not in ('http', 'https') or p.username or p.password or (p.scheme == 'http' and not self.allow_http):
             raise OutlineError('Unsafe download URL')
@@ -60,6 +60,8 @@ class OutlineClient:
             headers = {'User-Agent': 'outline-obsidian-sync/0.1'}
             if api:
                 headers['Accept-Encoding'] = 'gzip'
+                if api_version is not None:
+                    headers['X-Api-Version'] = str(api_version)
             if origin(url) == origin(self.base_url):
                 headers['Authorization'] = 'Bearer ' + self.token
             if data is not None:
@@ -97,10 +99,11 @@ class OutlineClient:
             time.sleep(max(delay, 0))
         raise OutlineError('No request attempts configured')
 
-    def call(self, name, params):
+    def call(self, name, params, *, api_version=None):
         if name not in self.READ_METHODS:
             raise OutlineError('Only read-only API methods are allowed')
-        raw, _ = self.request(self.base_url + '/api/' + name, json.dumps(params).encode(), api=True)
+        options = {'api_version': api_version} if api_version is not None else {}
+        raw, _ = self.request(self.base_url + '/api/' + name, json.dumps(params).encode(), api=True, **options)
         try:
             result = json.loads(raw)
         except (ValueError, UnicodeError):
@@ -108,6 +111,10 @@ class OutlineClient:
         if not isinstance(result, dict) or result.get('ok') is False or result.get('success') is False or 'data' not in result:
             raise OutlineError('API response missing successful data')
         return result
+
+    def rich_document(self, doc_id):
+        data = self.call('documents.info', {'id': doc_id}, api_version=3)['data']
+        return data.get('document', data)
 
     def pages(self, name, **params):
         offset, seen, items = 0, set(), []

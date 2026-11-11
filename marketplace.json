@@ -41,7 +41,14 @@
       "version": "0.1.0",
       "source": "./plugins/source-business-prd",
       "category": "developer-tools",
-      "keywords": ["business-knowledge", "prd", "reverse-engineering", "multi-repo", "serena", "dbhub"]
+      "keywords": [
+        "business-knowledge",
+        "prd",
+        "reverse-engineering",
+        "multi-repo",
+        "serena",
+        "dbhub"
+      ]
     },
     {
       "name": "source-business-knowledge",
@@ -61,8 +68,8 @@
     },
     {
       "name": "obsidian-kb-maintenance",
-      "description": "Maintain Obsidian note properties, Dataview directory indexes, evidence-backed Wiki pages and daily reading guides through the official CLI.",
-      "version": "0.3.0",
+      "description": "Maintain an Obsidian knowledge base with the official CLI, evidence-backed Wiki review and daily reading guides.",
+      "version": "0.1.0",
       "source": "./plugins/obsidian-kb-maintenance",
       "category": "productivity",
       "keywords": [
@@ -74,8 +81,8 @@
     },
     {
       "name": "outline-obsidian-sync",
-      "description": "Mirror an Outline knowledge base into Obsidian incrementally with local attachments, then run existing knowledge maintenance.",
-      "version": "0.1.1",
+      "description": "Incrementally mirror Outline documents, attachments and threaded comments in Document Comments format into Obsidian, then run existing knowledge maintenance.",
+      "version": "0.3.0",
       "source": "./plugins/outline-obsidian-sync",
       "category": "productivity",
       "keywords": [
@@ -84,6 +91,45 @@
         "knowledge-base",
         "incremental-sync",
         "attachments"
+      ]
+    },
+    {
+      "name": "outline-intent-sync",
+      "description": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-sync",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "sync"
+      ]
+    },
+    {
+      "name": "outline-intent-review",
+      "description": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-review",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "review"
+      ]
+    },
+    {
+      "name": "outline-intent-revise",
+      "description": "Reassess existing Outline intent comments and, after approval, align local Trellis artifacts and sync documents and replies.",
+      "version": "0.1.0",
+      "source": "./plugins/outline-intent-revise",
+      "category": "developer-tools",
+      "keywords": [
+        "outline",
+        "intent",
+        "trellis",
+        "review"
       ]
     }
   ]
