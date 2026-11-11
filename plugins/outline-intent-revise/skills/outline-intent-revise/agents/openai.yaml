@@ -1,4 +1,4 @@
 interface:
   display_name: "复核并回复 Intent 评审"
-  short_description: "复核评论真实性，授权后对齐 Trellis 全套规划并同步 Outline 和逐条回复"
+  short_description: "复核评论，授权后对齐 Trellis 和 Outline，并回写原评论及真实回复"
   default_prompt: "使用 $outline-intent-revise 复核我提供的 Outline intent 评论，先输出改进计划和回复草稿供我授权。"

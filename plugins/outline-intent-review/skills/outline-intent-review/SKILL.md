@@ -9,6 +9,8 @@ description: Use when the user asks to review another author's Outline intent pr
 
 ## 入口分支
 
+脚本参数、计划JSON及部署能力确认见[运行用法](references/runtime-usage.md)。
+
 1. `preflight` 检查 URL/token，缺配置向用户请求安全提供；检查用户指定文档链接，缺链接就询问。读取正文/富文本/版本及完整分页评论。解析失败、无权限或截断不算已读。
 2. 用 [模板](assets/intent-template.md) 运行 `validate`。Outline 正文无 H1 正常，代码块标题不计入结构。格式失败只形成格式评论：明确原章节、缺失字段、空白占位及修正要求；用户已明确要求发表评论时可直接发此评论，不要求先提供代码/产品 PRD。停止详细分析，不宣称代码评审完成，不代改作者正文。
 3. 模板合格后，检查当前窗口是否能读取引用的代码仓库与产品 PRD。仓库必须有可访问的当前代码目录，记录 commit 和工作区状态；只有远程 URL 或过期附件不算代码已核实。无法访问时在当前对话提示用户提供目录，不把资料请求当作代码缺陷评论；暂停详细代码评审，不能仅凭作者描述发布代码缺陷结论。

@@ -9,6 +9,8 @@ description: Use when the user asks to upload or synchronize a local Trellis prd
 
 ## 输入与校验
 
+脚本参数、计划JSON及部署能力确认见[运行用法](references/runtime-usage.md)。
+
 1. 运行 `preflight` 检查 Outline URL/token。缺项请求用户安全输入，不显示已有密钥；无凭据不上传。确认源文件与用户给出的 Outline collection/父文档目录链接；缺目录链接就询问，不能从标题猜目录。
 2. 对本地 PRD/intent 运行 `validate`，使用打包的 [intent 模板](assets/intent-template.md)。八节齐全不等于合格：空白字段、裸“需求1”及“Given ... When ... Then ...”均应补齐；不擅自虚构内容或为了通过改写产品意图。校验失败先列具体问题，停止上传。
 3. 读取同任务 design/implement 和关键引用，核对术语、AC与范围。纯技术任务产品 PRD 可明确不适用。不上传设计与执行计划互相矛盾的稿件；模板通过不代表语义已核实。

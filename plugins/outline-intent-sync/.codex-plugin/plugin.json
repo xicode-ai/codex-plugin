@@ -1,6 +1,6 @@
 {
   "name": "outline-intent-sync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
   "author": {
     "name": "Xicode AI"

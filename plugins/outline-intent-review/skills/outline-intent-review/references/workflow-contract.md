@@ -44,7 +44,7 @@
 
 每条成立意见建立对齐表：finding → PRD 的需求/AC → design 的边界/数据流/契约 → implement 的有序切片/测试入口/mock边界/验证证据 → 相关子任务/研究合同/JSONL清单。复杂任务不得只追加修订摘要；将变更融入原章节，消除旧口径，保持 requirement/AC ID、代码分析和已批准范围。确属轻量任务且不存在 design/implement 时说明，不凭空声称已同步；需要这些文件的复杂任务则补齐。
 
-本地需要批注时，原句用 Typora 可见的 `<mark style="background-color: #fff2cc; color: #222222;">原句</mark>`，紧邻展示原评论、复核结论和回复，标稳定 ID；保持模板八个 H2，批注放原章节内。不要仅用隐藏 HTML 注释/脚注。在线格式与本地样式可不同，语义、AC和版本必须相同。
+revise成功必须将完整原评论及实际发布的回复回写对应本地PRD/intent，不能只同步正文或抄录回复草稿。本地原句用 Typora 可见的 `<mark style="background-color: #fff2cc; color: #222222;">原句</mark>`，紧邻展示原评论、复核结论和回复，标稳定 ID；保持模板八个 H2，批注放原章节内。不要仅用隐藏 HTML 注释/脚注。在线格式与本地样式可不同，语义、AC和版本必须相同。
 
 授权覆盖本次具体计划与回复内容；脚本 digest 只绑定计划字节，不证明有人批准。记录真实对话授权，不能自己生成“用户已同意”作为凭据。批准后重新校验全部本地源哈希、远端正文/评论快照；有新编辑则重新比较受影响内容；拟修改正文、回复的实质内容或目标/动作范围改变时重新待审。仅无关来源变化且补验确认批准的修改和回复完全不变，可更新快照并保留原授权依据，不重复索要同一许可；不套用旧稿覆盖。
 
@@ -61,3 +61,13 @@
 ## API 依据
 
 RPC 与认证见 [Outline API](https://docs.getoutline.com/s/guide/doc/api-1rEIXDfLF6)。文档与评论字段见官方 [documents schema](https://github.com/outline/outline/blob/main/server/routes/api/documents/schema.ts)、[comments schema](https://github.com/outline/outline/blob/main/server/routes/api/comments/schema.ts)。支持参数随部署版本不同；`lastRevision` 的发布记录见 [v1.10.0](https://github.com/outline/outline/discussions/13607)，使用前核实，不硬套最新服务能力。
+
+## 本地评审线程镜像完成条件
+
+revise用comment_mirrors绑定document_id、本地path和metadata_path；有正文更新可由source_path默认建立，只有回复时也必须显式绑定。每个aligned规划类型仍需真实路径并固定哈希。预览只在staging生成，未发布内容明确为草稿；依实际Trellis上下文/文件上限设置max_bytes，不静默截断或修改上限。
+
+执行本地改稿时先保留当前已核实原线程，不把待发回复混入。全部远端动作验证后，最终完整快照里的原评论、已有回复和新回复在同一本地阅读文档呈现；安全唯一锚点黄色高亮并就近展示，歧义/已改写/代码或表格内不安全锚点明确待定位。保持八个H2、作者/时间/状态和真实父子ID，富文本可见内容不能悄悄丢失。
+
+展示层使用可验证管理标记和内容校验，快照/映射JSON与阅读稿一并备份并回读。再次prepare/上传提取干净正文，不复制原生评论进正文；仅回复的复核也须核对本地/远端正文或明确经审阅的呈现转换。手写批注不自动删除，托管区被编辑/损坏则冲突。完整新快照更新/移除远端已改/删的展示；断页不当作删除。
+
+本地镜像失败时failed_stage=comment_mirror且complete=false；恢复由批准的正文和真实回读重算，不信任日志自填哈希，不重发已确认的远端动作。来源变化、写失败或超限保留可恢复状态；未验证数据不冒充已发布。只对齐本次完成快照，后续新评论需下次复核。

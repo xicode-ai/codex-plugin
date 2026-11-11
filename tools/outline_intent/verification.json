@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-11",
+  "status": "local_implementation_verified_final_changes_uncommitted",
+  "plugins": [
+    "outline-intent-sync",
+    "outline-intent-review",
+    "outline-intent-revise"
+  ],
+  "unit_tests": {
+    "outline_intent_targeted": {
+      "tests": 107,
+      "result": "PASS"
+    },
+    "repository_full_suite": {
+      "tests": 262,
+      "result": "PASS"
+    }
+  },
+  "checks": {
+    "skill_creator_quick_validate": "PASS all three skills",
+    "independent_installation": "PASS copied standalone packages --help and template validation",
+    "bundle_drift": "PASS --check",
+    "git_diff_check": "PASS",
+    "requested_template_byte_match": true,
+    "real_M_prd_readonly_validation": "PRIOR_BASELINE_ONLY; not rerun for this enhancement",
+    "typora_interactive_rendering": "NOT_RUN; Markdown markup/roundtrip tested offline"
+  },
+  "review_regressions": [
+    "Foreign journal preserved",
+    "Remote journal cannot rebase approved source",
+    "Verified action flags require actual readback",
+    "Source hashes checked after local changes and before remote action",
+    "Local/remote intent source binding",
+    "Separate deployment capability and configured-origin guard",
+    "Full comment snapshots and original anchors",
+    "Native own-comment anchor-only document changes",
+    "Nested document/comment/collection RPC shapes",
+    "Collection and parent-document creation",
+    "Committed create/reply timeout recovery without resend",
+    "Alignment declarations require actual reviewed artifact paths",
+    "Recovery journal state must derive from approved baseline and actual planned readbacks",
+    "Configured origin and separately confirmed deployment capability rechecked at apply",
+    "Complete original threads and actual published replies mirrored before completion",
+    "Canonical upload excludes verified managed review layer; human notes retained",
+    "Ambiguous or unsafe anchors fall back visibly; unsupported visible rich data blocks",
+    "Finalization/write/read/snapshot/size failure remains partial and recoverable without duplicate replies",
+    "Source and journal integrity use recomputed approved projection, not journal-authored hashes",
+    "Staged local changes retain original discussions on final read failure",
+    "Comments-only revise requires explicit mapping and reviewed local/remote body binding"
+  ],
+  "artifacts": {
+    "tools/outline_intent/outline_intent.py": "eba0d0e5584608f58dbf3490a98552ea521b922dca8223fda90935d04728258f",
+    "tools/outline_intent/plan_engine.py": "ba288de2cbda7acf2bd90431283ff76cf71e3334002f2f6b304d4dfae8d4851e",
+    "tools/outline_intent/workflow-contract.md": "49e74a6fffcf8b8081c0a9d59c06699aeb422771d3e53ca8be33470d6ebc620a",
+    "tools/outline_intent/runtime-usage.md": "fb4808694381d60aebef154448352b123c6227339b19fd17d82c30405a371cb3",
+    "tools/outline_intent/intent-template.md": "3a973c1883377156957308a72eb5e51981d8a4a3672df94297c363afe0bc95ab",
+    "tools/bundle_outline_intent.py": "ba57fb3b849ce6d9d9894603d094f624c25beb1fa8a3f3df8c534842b58ebd9c",
+    "plugins/outline-intent-sync/skills/outline-intent-sync/SKILL.md": "6a505ea9c66d13180de50cb2bfa9d2684ab3137d638436286e6384e42d4e449b",
+    "plugins/outline-intent-review/skills/outline-intent-review/SKILL.md": "8dfd9a14fa02bb2a69cea0f8c7cdfeb443166ee0dda18f5658b04c42d5ee9741",
+    "plugins/outline-intent-revise/skills/outline-intent-revise/SKILL.md": "1ee9601c9d1951eda887fd324b697e41a6eebb2e2755d94201bed20659cdd6fe",
+    "tools/outline_intent/comment_mirror.py": "22334da756657da910394db13c4dfd7ea8ad1a758dd4c6e225657b5fc696f6b9"
+  },
+  "live_outline_read_or_write": "NOT_RUN for plugin implementation; all runtime API tests offline/fake",
+  "installed_into_user_runtime": false,
+  "commit_push": "NOT_RUN for this enhancement; original preexisting repository changes retained",
+  "pms_M_implementation_started": false,
+  "limitations": [
+    "Human authorization and semantic artifact alignment remain agent/operator judgments; hashes only bind inputs",
+    "lastRevision capability confirmation is operator-provided deployment evidence, not an automatic proof of server implementation",
+    "Full Markdown replacement needs explicit rich-format risk review; unsupported or lost anchors block successful completion",
+    "Cross-filesystem and Outline mutations are not an atomic transaction",
+    "Actual Outline deployment API/permissions and real write compatibility are not validated by offline tests",
+    "Final snapshot alignment is not a live subscription",
+    "Unsupported rich comment nodes fail closed instead of dropping visible content",
+    "Typora interactive rendering and real Outline write compatibility are unverified"
+  ],
+  "preexisting_changes": "Existing Obsidian/Outline sync edits and intentional deletions were not modified by this task; additional concurrent edits were observed and retained",
+  "verification_head": "b128db92387f7127455f0cd76bbd11621eb152d0",
+  "enhancement": "outline-intent-revise local actual-thread mirror",
+  "component_tests": {
+    "projection": 25,
+    "mirror_flow": 27,
+    "runtime": 32,
+    "plan_guards": 19,
+    "packaging": 4
+  },
+  "plugin_versions": {
+    "outline-intent-sync": "0.1.1",
+    "outline-intent-review": "0.1.1",
+    "outline-intent-revise": "0.2.0"
+  },
+  "reviews": {
+    "projection": "independent spec and quality PASS",
+    "integration_and_delivery": "main review; requested Luna handoff hit usage limit before edits"
+  }
+}
