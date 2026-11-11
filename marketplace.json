@@ -96,7 +96,7 @@
     {
       "name": "outline-intent-sync",
       "description": "Validate and sync local Trellis intent documents into a user-specified Outline directory.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "source": "./plugins/outline-intent-sync",
       "category": "developer-tools",
       "keywords": [
@@ -109,7 +109,7 @@
     {
       "name": "outline-intent-review",
       "description": "Review another author's Outline intent against the template, optional product PRD and accessible current source code.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "source": "./plugins/outline-intent-review",
       "category": "developer-tools",
       "keywords": [
@@ -122,7 +122,7 @@
     {
       "name": "outline-intent-revise",
       "description": "Reassess Outline intent reviews and, after approval, align Trellis artifacts and mirror original threads and actual published replies locally.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "source": "./plugins/outline-intent-revise",
       "category": "developer-tools",
       "keywords": [

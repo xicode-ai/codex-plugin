@@ -1,6 +1,6 @@
 # 复核并回复 Intent 评审
 
-独立插件 `outline-intent-revise`，支持仓库现有的 Codex 与 Claude 插件包装。
+独立插件 `outline-intent-revise`，支持仓库现有的 Codex、Claude 与 ZCode 插件包装。
 
 调用：
 
@@ -27,3 +27,5 @@ python3 <skill-dir>/scripts/outline_intent.py --help
 评论回写是完成条件：只有远端回复回读成功、最终完整快照及本地文档/元数据都验证后才 complete。超时、断页或本地写失败保持待完成状态，恢复不会重复回复。该机制对齐本次结束快照，不是实时订阅。
 
 映射字段、预览、大小限制和恢复命令见[运行用法](skills/outline-intent-revise/references/runtime-usage.md)。
+
+ZCode：在「设置 → 插件 → 创建 → 添加市场」选择本仓库目录，然后在个人市场安装并启用本插件；在 ZCode Agent 对话中使用 `$outline-intent-revise` 调用。安装后如需获取仓库更新，请刷新市场并重新安装对应插件。

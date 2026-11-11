@@ -85,12 +85,19 @@
     "packaging": 4
   },
   "plugin_versions": {
-    "outline-intent-sync": "0.1.1",
-    "outline-intent-review": "0.1.1",
-    "outline-intent-revise": "0.2.0"
+    "outline-intent-sync": "0.1.2",
+    "outline-intent-review": "0.1.2",
+    "outline-intent-revise": "0.2.1"
   },
   "reviews": {
     "projection": "independent spec and quality PASS",
     "integration_and_delivery": "main review; requested Luna handoff hit usage limit before edits"
+  },
+  "zcode_support": {
+    "scope": "three Outline intent plugins",
+    "targeted_tests": 108,
+    "result": "PASS",
+    "marketplace_and_manifest": "offline checks PASS",
+    "live_installation_and_agent_run": "NOT_RUN"
   }
 }

@@ -1,6 +1,6 @@
 # 评审 Outline Intent
 
-独立插件 `outline-intent-review`，支持仓库现有的 Codex 与 Claude 插件包装。
+独立插件 `outline-intent-review`，支持仓库现有的 Codex、Claude 与 ZCode 插件包装。
 
 调用：
 
@@ -19,3 +19,5 @@ python3 <skill-dir>/scripts/outline_intent.py --help
 创建本插件不代表已连接或修改真实 Outline。复核先给计划与回复草稿，用户授权后才改任务/正文及回复；同步与初次评论依据该次明确请求。脚本 digest 绑定计划，不能替代真实用户授权。
 
 维护者修改共享资源后执行 `python3 tools/bundle_outline_intent.py`，再运行 `--check` 及 `python3 -m unittest discover -s tests -p 'test_outline_intent*.py'`。
+
+ZCode：在「设置 → 插件 → 创建 → 添加市场」选择本仓库目录，然后在个人市场安装并启用本插件；在 ZCode Agent 对话中使用 `$outline-intent-review` 调用。安装后如需获取仓库更新，请刷新市场并重新安装对应插件。

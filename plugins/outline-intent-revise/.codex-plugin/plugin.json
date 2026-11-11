@@ -1,6 +1,6 @@
 {
   "name": "outline-intent-revise",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Reassess Outline intent reviews and, after approval, align Trellis artifacts and mirror original threads and actual published replies locally.",
   "author": {
     "name": "Xicode AI"

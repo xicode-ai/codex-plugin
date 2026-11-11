@@ -14,6 +14,21 @@ NAMES = ("outline-intent-sync", "outline-intent-review", "outline-intent-revise"
 
 
 class OutlineIntentPackagingTests(unittest.TestCase):
+    def test_zcode_manifests_match_marketplace_and_expose_packaged_skills(self):
+        catalog = json.loads((ROOT / "marketplace.json").read_text())
+        for name in NAMES:
+            with self.subTest(name=name):
+                entry = next(x for x in catalog["plugins"] if x["name"] == name)
+                base = (ROOT / entry["source"]).resolve()
+                manifest = json.loads((base / ".zcode-plugin/plugin.json").read_text())
+                self.assertEqual(manifest["name"], name)
+                self.assertEqual(manifest["version"], entry["version"])
+                self.assertEqual(manifest["description"], entry["description"])
+                self.assertTrue((base / manifest["skills"] / name / "SKILL.md").is_file())
+                for host in (".codex-plugin", ".claude-plugin"):
+                    other = json.loads((base / host / "plugin.json").read_text())
+                    self.assertEqual(other["version"], entry["version"])
+
     def test_three_plugins_are_independently_registered_and_self_contained(self):
         for name in NAMES:
             with self.subTest(name=name):
