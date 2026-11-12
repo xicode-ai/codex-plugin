@@ -1,0 +1,10 @@
+{
+  "name": "meeting-stone-timesheet",
+  "version": "0.1.0",
+  "description": "Generate a daily work log and record explicitly authorized hours against uniquely matched Meeting Stone tasks.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/"
+}

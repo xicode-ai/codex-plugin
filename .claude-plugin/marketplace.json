@@ -75,6 +75,19 @@
         "trellis",
         "review"
       ]
+    },
+    {
+      "name": "meeting-stone-timesheet",
+      "description": "Generate a daily work log and record explicitly authorized hours against uniquely matched Meeting Stone tasks.",
+      "version": "0.1.0",
+      "source": "./plugins/meeting-stone-timesheet",
+      "category": "productivity",
+      "keywords": [
+        "meeting-stone",
+        "timesheet",
+        "daily-work-log",
+        "trellis"
+      ]
     }
   ]
 }

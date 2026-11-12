@@ -1,0 +1,25 @@
+{
+  "name": "meeting-stone-timesheet",
+  "version": "0.1.0",
+  "description": "Generate a daily work log and record explicitly authorized hours against uniquely matched Meeting Stone tasks.",
+  "author": {
+    "name": "Xicode AI"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Meeting Stone 日报与工时",
+    "shortDescription": "生成日报并按用户指定工时填写任务",
+    "longDescription": "Generate a daily work log and record explicitly authorized hours against uniquely matched Meeting Stone tasks.",
+    "developerName": "Xicode AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "使用 $meeting-stone-timesheet 生成今日日报并填写 Meeting Stone 工时。"
+    ],
+    "brandColor": "#2563EB"
+  }
+}

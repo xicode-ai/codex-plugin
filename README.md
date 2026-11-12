@@ -1,5 +1,9 @@
 # codex-plugin
 
+## Meeting Stone 日报与工时
+
+[meeting-stone-timesheet](plugins/meeting-stone-timesheet/README.md) 汇总当天跨项目工作会话，并在本次运行认证、重复检查、唯一任务匹配及用户逐项指定工时后填写工时。
+
 ## Outline Intent 插件
 
 | 插件 | 用途 | 授权边界 |
