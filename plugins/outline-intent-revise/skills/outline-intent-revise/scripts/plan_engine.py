@@ -124,7 +124,7 @@ def _body(text):
     report = _runtime().validate_template(text)
     if not report.ok:
         raise OutlineIntentError(
-            "Proposed intent fails template: " + "; ".join(report.errors)
+            "Proposed intent lacks essential sections: " + "; ".join(report.errors)
         )
 
 

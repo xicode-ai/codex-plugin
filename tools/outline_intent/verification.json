@@ -49,16 +49,16 @@
     "Comments-only revise requires explicit mapping and reviewed local/remote body binding"
   ],
   "artifacts": {
-    "tools/outline_intent/outline_intent.py": "eba0d0e5584608f58dbf3490a98552ea521b922dca8223fda90935d04728258f",
-    "tools/outline_intent/plan_engine.py": "ba288de2cbda7acf2bd90431283ff76cf71e3334002f2f6b304d4dfae8d4851e",
-    "tools/outline_intent/workflow-contract.md": "49e74a6fffcf8b8081c0a9d59c06699aeb422771d3e53ca8be33470d6ebc620a",
-    "tools/outline_intent/runtime-usage.md": "fb4808694381d60aebef154448352b123c6227339b19fd17d82c30405a371cb3",
+    "tools/outline_intent/outline_intent.py": "60d6f7cc6f350cf849c2c813ed2923c6ba10ac3c02f43aeffb57c1b399d0018f",
+    "tools/outline_intent/plan_engine.py": "8745fc74768a5a8257cfb839debc118c7326d83e83d49821c72e84239fec863b",
+    "tools/outline_intent/workflow-contract.md": "440e69b1109bf49674d12f97dcd29e70010128c9e98cc7b21afaebd2a0b161b3",
+    "tools/outline_intent/runtime-usage.md": "4a0eb22136b765061adee0c78143ab59dec4bab9cceb8cea1b0217bf1a2a3e4f",
     "tools/outline_intent/intent-template.md": "3a973c1883377156957308a72eb5e51981d8a4a3672df94297c363afe0bc95ab",
     "tools/bundle_outline_intent.py": "ba57fb3b849ce6d9d9894603d094f624c25beb1fa8a3f3df8c534842b58ebd9c",
-    "plugins/outline-intent-sync/skills/outline-intent-sync/SKILL.md": "6a505ea9c66d13180de50cb2bfa9d2684ab3137d638436286e6384e42d4e449b",
-    "plugins/outline-intent-review/skills/outline-intent-review/SKILL.md": "8dfd9a14fa02bb2a69cea0f8c7cdfeb443166ee0dda18f5658b04c42d5ee9741",
-    "plugins/outline-intent-revise/skills/outline-intent-revise/SKILL.md": "1ee9601c9d1951eda887fd324b697e41a6eebb2e2755d94201bed20659cdd6fe",
-    "tools/outline_intent/comment_mirror.py": "22334da756657da910394db13c4dfd7ea8ad1a758dd4c6e225657b5fc696f6b9"
+    "plugins/outline-intent-sync/skills/outline-intent-sync/SKILL.md": "8195f97cb0f514ae5a2dbcae5add59fd94736ad3a4ad5af3e04885d9b0af5886",
+    "plugins/outline-intent-review/skills/outline-intent-review/SKILL.md": "556eb91042b7331ab5e1c9b765913263913fab86677dde2c7a8f2807746dbf68",
+    "plugins/outline-intent-revise/skills/outline-intent-revise/SKILL.md": "0fdd143b1b323007dc0997becebaab350c34f69f715809fbf68b811c6c8cddaa",
+    "tools/outline_intent/comment_mirror.py": "a8e00527c924c8efe0210e01cc44bfee6ea0d44a69e7549158d5a24b8f6f7054"
   },
   "live_outline_read_or_write": "NOT_RUN for plugin implementation; all runtime API tests offline/fake",
   "installed_into_user_runtime": false,
@@ -85,9 +85,9 @@
     "packaging": 4
   },
   "plugin_versions": {
-    "outline-intent-sync": "0.1.2",
-    "outline-intent-review": "0.1.2",
-    "outline-intent-revise": "0.2.1"
+    "outline-intent-sync": "0.2.0",
+    "outline-intent-review": "0.2.0",
+    "outline-intent-revise": "0.3.0"
   },
   "reviews": {
     "projection": "independent spec and quality PASS",
@@ -99,5 +99,10 @@
     "result": "PASS",
     "marketplace_and_manifest": "offline checks PASS",
     "live_installation_and_agent_run": "NOT_RUN"
+  },
+  "essential_sections_change": {
+    "targeted_tests": 107,
+    "full_suite": 262,
+    "real_outline": "NOT_RUN"
   }
 }

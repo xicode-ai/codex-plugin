@@ -381,7 +381,7 @@ def _fallback_position(body, ranges):
             and re.search(r"\bReferences\b|参考资料", match[1], re.I)
         ):
             return match.end()
-    raise CommentMirrorError("Unlocated comments require an existing References H2")
+    return len(body)
 
 
 def render_mirror(
@@ -395,7 +395,7 @@ def render_mirror(
     """Render every actual comment/reply; never synthesize unpublished drafts.
 
     placements optionally maps root IDs to {"quote": exact_source_quote}.
-    Unsafe, duplicate or overlapping anchors fall back under References.
+    Unsafe, duplicate or overlapping anchors fall back under References or at the end.
     """
     body = canonical_body(body)
     document_id = _text(document_id, "document ID", required=True)

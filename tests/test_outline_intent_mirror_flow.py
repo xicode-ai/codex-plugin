@@ -97,6 +97,17 @@ class MirrorFlowTests(unittest.TestCase):
         self.assertEqual(2, len(self.mutations()))
         self.assertEqual(local, self.reader.read_text())
 
+    def test_minimal_intent_without_references_mirrors_unlocated_replies(self):
+        body = "## 背景\n外部调用存在延迟。\n\n## 需求\n限制连接占用。\n\n## 目标\n提升服务稳定性。\n"
+        self.reader.write_text(body)
+        self.client.docs["d1"]["text"] = body
+        prepared = self.prepare(self.plan(update=False))
+        self.assertTrue(self.apply(prepared)["complete"])
+        local = self.reader.read_text()
+        self.assertIn("待定位评审线程", local)
+        self.assertIn("Actual published response", local)
+        self.assertEqual(canonical_body(local), body)
+
     def test_prepare_freezes_mapping_and_stages_preview_without_local_writes(self):
         before = list(self.root.rglob("*"))
         prepared = self.prepare()

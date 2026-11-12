@@ -13,7 +13,7 @@ python3 <skill-dir>/scripts/outline_intent.py snapshot --target-url https://outl
 
 `--prompt`询问缺失URL并用getpass输入token，密钥不进参数或输出。默认只在内存使用，用户明确要求保存才加`--save-config`（文件0600、父目录0700）。没有`--token`参数。支持`OUTLINE_URL`/`OUTLINE_API_TOKEN`；或`--config`/`OUTLINE_CONFIG_FILE`，默认`~/.config/outline-intent/config.json`，字段`url`/`token`。更换origin不复用其他部署的凭据/能力。preflight通过不代表远端认证或写权限已验证。
 
-链接支持urlId/UUID及fragment。计划使用snapshot返回的规范文档ID，创建目标保留用户完整collection/父文档链接。快照保存富文本和全部分页评论，不能用失败后的空数组代替。`validate --template`可用于用户明确选择的其他检查，但上传计划仍校验打包模板，不能以此绕过规范。
+链接支持urlId/UUID及fragment。计划使用snapshot返回的规范文档ID，创建目标保留用户完整collection/父文档链接。快照保存富文本和全部分页评论，不能用失败后的空数组代替。`validate`检查目标、背景、需求三个主要章节，不要求固定模板。`--template`为兼容参数，不改变校验规则。
 
 ## 原始计划字段
 
@@ -64,7 +64,7 @@ python3 <skill-dir>/scripts/outline_intent.py apply --plan <staging>/prepared-pl
 
 ## revise 的本地评论回写（0.2）
 
-revise 成功必须把原评论、已有回复和实际发布的新回复写回对应本地 intent。原句可安全唯一定位时用黄色背景，线程紧邻展示；无法定位时明确列在现有 References 下。作者、时间、状态和父子关系来自完整快照，草稿不得作为已发布回复。
+revise 成功必须把原评论、已有回复和实际发布的新回复写回对应本地 intent。原句可安全唯一定位时用黄色背景，线程紧邻展示；无法定位时明确列在现有 References 下；没有该章节时列在文末。作者、时间、状态和父子关系来自完整快照，草稿不得作为已发布回复。
 
 `comment_mirrors` 与其他字段一起进入 prepare 的 digest。例如：
 

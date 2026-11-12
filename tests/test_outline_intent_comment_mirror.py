@@ -241,8 +241,10 @@ class CommentMirrorTests(unittest.TestCase):
     def test_missing_references_cannot_hide_unlocated_thread(self):
         c = comment()
         c["anchorText"] = "removed"
-        with self.assertRaises(mirror.CommentMirrorError):
-            self.render("## Goal\nBody\n", snapshot(c))
+        body = "## Goal\nBody\n"
+        result = self.render(body, snapshot(c))
+        self.assertIn("待定位评审线程", result["text"])
+        self.assertEqual(body, mirror.canonical_body(result["text"]))
 
     def test_container_fenced_marker_examples_roundtrip_as_source(self):
         examples = (

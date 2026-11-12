@@ -604,7 +604,7 @@ def validate_template(
     template_text: Optional[str] = None,
     template_path: Optional[os.PathLike[str] | str] = None,
 ) -> ValidationReport:
-    """Check the pinned eight-section structure and required, non-scaffold content."""
+    """Check essential intent sections without requiring a fixed template."""
     report = ValidationReport()
     if not isinstance(markdown, str):
         report.structural_errors.append("document content must be Markdown text")
@@ -618,97 +618,48 @@ def validate_template(
     except CommentMirrorError as exc:
         report.content_errors.append(str(exc))
         return report
-    if template_text is None:
-        try:
-            template_text = _read_template(template_path)
-        except ConfigError as exc:
-            report.structural_errors.append(str(exc))
-            return report
-    template_headings, template_errors = _h2_headings(template_text)
-    if template_errors:
-        report.structural_errors.extend(template_errors)
-    if tuple(template_headings) != REQUIRED_H2:
-        report.structural_errors.append(
-            "bundled template H2 headings do not match the approved eight-section order"
-        )
-
-    chunks, headings, parse_errors = _sections(markdown)
-    report.headings = headings
-    report.structural_errors.extend(parse_errors)
-    seen: set[str] = set()
-    for heading in headings:
-        if heading not in REQUIRED_H2:
-            report.structural_errors.append(f"unexpected H2 heading: {heading}")
-        if heading in seen:
-            report.structural_errors.append(f"duplicate H2 heading: {heading}")
-        seen.add(heading)
-    if tuple(headings) != REQUIRED_H2:
-        missing = [heading for heading in REQUIRED_H2 if heading not in seen]
-        if missing:
-            report.structural_errors.append(
-                "missing H2 headings: " + ", ".join(missing)
-            )
-        expected_index = {heading: index for index, heading in enumerate(REQUIRED_H2)}
-        known_order = [
-            expected_index[heading] for heading in headings if heading in expected_index
-        ]
-        if known_order != sorted(known_order):
-            report.structural_errors.append("H2 headings are not in the approved order")
-
-    by_heading = _section_map(chunks)
-    for required in REQUIRED_H2:
-        body = by_heading.get(required)
-        if body is None:
-            continue
-        if not _has_substantive_value(body):
-            report.content_errors.append(
-                f"{required}: section is empty or contains only scaffolding/placeholders"
-            )
-
-    _check_fields(
-        report, "Background", by_heading.get(REQUIRED_H2[1], ""), BACKGROUND_FIELDS
-    )
-    requirements = by_heading.get(REQUIRED_H2[2], "")
-    functional = _heading_body(requirements, "功能需求")
-    nonfunctional = _heading_body(requirements, "非功能需求")
-    if functional is None:
-        report.content_errors.append(
-            "Requirements: required subsection '功能需求' is missing"
-        )
-    elif not _has_substantive_value(functional):
-        report.content_errors.append(
-            "Requirements: '功能需求' is blank or placeholder-only"
-        )
-    if nonfunctional is None:
-        report.content_errors.append(
-            "Requirements: required subsection '非功能需求' is missing"
-        )
-    else:
-        _check_fields(
-            report, "Requirements / 非功能需求", nonfunctional, NONFUNCTIONAL_FIELDS
-        )
-
-    acceptance = by_heading.get(REQUIRED_H2[4], "")
-    acceptance_visible, _ = _visible_lines(acceptance)
-    acceptance_text = "\n".join(acceptance_visible)
-    for marker in ("Given", "When", "Then"):
-        if not re.search(r"\b" + marker + r"\b", acceptance_text, re.IGNORECASE):
-            report.content_errors.append(
-                f"Acceptance Criteria: required Given/When/Then marker '{marker}' is missing"
-            )
-
-    _check_fields(
-        report, "Risks & Edge Cases", by_heading.get(REQUIRED_H2[5], ""), RISK_FIELDS
-    )
-    _check_fields(
-        report,
-        "Release / Rollback Notes",
-        by_heading.get(REQUIRED_H2[6], ""),
-        RELEASE_FIELDS,
-    )
-    _check_fields(
-        report, "References", by_heading.get(REQUIRED_H2[7], ""), REFERENCE_FIELDS
-    )
+    # A template remains an optional reference, not a gate on document layout.
+    lines, fence_closed = _visible_lines(markdown)
+    if not fence_closed:
+        report.structural_errors.append("Markdown contains an unclosed fenced code block")
+    groups = {"目标 / Goal": [], "背景 / Background": [], "需求 / Requirements": []}
+    patterns = {
+        "目标 / Goal": r"(?:目标|目的|goal|objective)",
+        "背景 / Background": r"(?:背景|现状与问题|background|context)",
+        "需求 / Requirements": r"(?:需求|要求|requirements?)",
+    }
+    found = []
+    for index, line in enumerate(lines):
+        match = re.match(r"^\s{0,3}#{1,6}[ \t]+(.+?)\s*#*\s*$", line)
+        if match:
+            title = match.group(1).strip()
+            report.headings.append(title)
+            normalized = re.sub(r"^\s*(?:[0-9]+[.、)]\s*)", "", title)
+            for key, pattern in patterns.items():
+                if not normalized.startswith("非目标") and re.search(pattern, normalized, re.I):
+                    found.append((index, key))
+    # The next same-or-higher heading ends a section; nested subsections count as content.
+    for index, key in found:
+        level = len(re.match(r"^\s{0,3}(#+)", lines[index]).group(1))
+        end = len(lines)
+        for i in range(index + 1, len(lines)):
+            heading = re.match(r"^\s{0,3}(#{1,6})[ \t]+", lines[i])
+            if heading and len(heading.group(1)) <= level:
+                end = i
+                break
+        groups[key].append("\n".join(lines[index + 1:end]))
+    for key, sections in groups.items():
+        if not sections:
+            report.structural_errors.append(f"missing essential section: {key}")
+        elif not any(
+            _has_substantive_value(line)
+            for body in sections
+            for line in body.splitlines()
+            if not re.match(r"^\s*#{1,6}\s", line)
+            and not re.search(r"简洁的一句话目标|需求\s*\d+", line)
+            and not re.search(r"[:：]\s*$", line)
+        ):
+            report.content_errors.append(f"{key}: section is empty or placeholder-only")
     return report
 
 
@@ -1198,7 +1149,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     validate = commands.add_parser(
-        "validate", help="Validate an intent Markdown file against the bundled template"
+        "validate", help="Validate essential intent sections"
     )
     validate.add_argument("--file", type=Path, required=True)
     validate.add_argument("--template", type=Path)

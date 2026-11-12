@@ -1,19 +1,19 @@
 ---
 name: outline-intent-review
-description: Use when the user asks to review another author's Outline intent proposal against its template, product requirements and accessible current source code. 适用于初次评审他人的 intent 并定位评论；不用于复核已有评审线程或自动改正文。
+description: Use when the user asks to review another author's Outline intent proposal against its essential sections, product requirements and accessible current source code. 适用于初次评审他人的 intent 并定位评论；不用于复核已有评审线程或自动改正文。
 ---
 
 # 评审他人的 Outline Intent
 
-给出基于原文和当前代码的可定位评审，优先保障可用性与稳定性，同时评估改造可能造成的业务风险。读取 [通用契约](references/workflow-contract.md) 的配置、模板、代码/PRD取证与评审输出部分；脚本位于本 Skill 的 `scripts/outline_intent.py`，先看 `--help`。
+给出基于原文和当前代码的可定位评审，优先保障可用性与稳定性，同时评估改造可能造成的业务风险。读取 [通用契约](references/workflow-contract.md) 的配置、主要章节、代码/PRD取证与评审输出部分；脚本位于本 Skill 的 `scripts/outline_intent.py`，先看 `--help`。
 
 ## 入口分支
 
 脚本参数、计划JSON及部署能力确认见[运行用法](references/runtime-usage.md)。
 
 1. `preflight` 检查 URL/token，缺配置向用户请求安全提供；检查用户指定文档链接，缺链接就询问。读取正文/富文本/版本及完整分页评论。解析失败、无权限或截断不算已读。
-2. 用 [模板](assets/intent-template.md) 运行 `validate`。Outline 正文无 H1 正常，代码块标题不计入结构。格式失败只形成格式评论：明确原章节、缺失字段、空白占位及修正要求；用户已明确要求发表评论时可直接发此评论，不要求先提供代码/产品 PRD。停止详细分析，不宣称代码评审完成，不代改作者正文。
-3. 模板合格后，检查当前窗口是否能读取引用的代码仓库与产品 PRD。仓库必须有可访问的当前代码目录，记录 commit 和工作区状态；只有远程 URL 或过期附件不算代码已核实。无法访问时在当前对话提示用户提供目录，不把资料请求当作代码缺陷评论；暂停详细代码评审，不能仅凭作者描述发布代码缺陷结论。
+2. 运行 `validate` 检查目标、背景、需求章节。Outline 正文无 H1 正常，代码块标题不计入结构。格式失败只形成格式评论：明确原章节、缺失字段、空白占位及修正要求；用户已明确要求发表评论时可直接发此评论，不要求先提供代码/产品 PRD。停止详细分析，不宣称代码评审完成，不代改作者正文。
+3. 主要章节合格后，检查当前窗口是否能读取引用的代码仓库与产品 PRD。仓库必须有可访问的当前代码目录，记录 commit 和工作区状态；只有远程 URL 或过期附件不算代码已核实。无法访问时在当前对话提示用户提供目录，不把资料请求当作代码缺陷评论；暂停详细代码评审，不能仅凭作者描述发布代码缺陷结论。
 4. 产品 PRD 可选：能读就结合分析；引用不可读则提示补充可访问链接/文件。纯技术改造明确写“产品 PRD 不适用”及依据，不因缺业务 PRD阻断技术评审；业务意图仍缺证据的单项保留未确认。不得把 intent 自身当独立产品证据。
 
 ## 分析与评论

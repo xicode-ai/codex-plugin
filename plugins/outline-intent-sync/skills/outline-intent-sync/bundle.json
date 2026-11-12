@@ -2,11 +2,11 @@
   "bundle_version": 1,
   "template_version": "trellis-intent-2026-11-10",
   "sha256": {
-    "scripts/outline_intent.py": "eba0d0e5584608f58dbf3490a98552ea521b922dca8223fda90935d04728258f",
-    "scripts/plan_engine.py": "ba288de2cbda7acf2bd90431283ff76cf71e3334002f2f6b304d4dfae8d4851e",
-    "scripts/comment_mirror.py": "22334da756657da910394db13c4dfd7ea8ad1a758dd4c6e225657b5fc696f6b9",
+    "scripts/outline_intent.py": "60d6f7cc6f350cf849c2c813ed2923c6ba10ac3c02f43aeffb57c1b399d0018f",
+    "scripts/plan_engine.py": "8745fc74768a5a8257cfb839debc118c7326d83e83d49821c72e84239fec863b",
+    "scripts/comment_mirror.py": "a8e00527c924c8efe0210e01cc44bfee6ea0d44a69e7549158d5a24b8f6f7054",
     "assets/intent-template.md": "3a973c1883377156957308a72eb5e51981d8a4a3672df94297c363afe0bc95ab",
-    "references/workflow-contract.md": "49e74a6fffcf8b8081c0a9d59c06699aeb422771d3e53ca8be33470d6ebc620a",
-    "references/runtime-usage.md": "fb4808694381d60aebef154448352b123c6227339b19fd17d82c30405a371cb3"
+    "references/workflow-contract.md": "440e69b1109bf49674d12f97dcd29e70010128c9e98cc7b21afaebd2a0b161b3",
+    "references/runtime-usage.md": "4a0eb22136b765061adee0c78143ab59dec4bab9cceb8cea1b0217bf1a2a3e4f"
   }
 }

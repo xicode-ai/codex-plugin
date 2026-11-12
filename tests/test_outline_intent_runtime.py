@@ -514,88 +514,23 @@ class OutlineIntentTemplateTests(unittest.TestCase):
         report = self.runtime.validate_template(markdown, template_text=TEMPLATE)
         self.assertTrue(report.ok, report.errors)
 
-    def test_rejects_missing_duplicate_reordered_and_extra_h2(self):
-        cases = {
-            "missing": VALID_INTENT.replace("## 目标 / Goal\n", ""),
-            "duplicate": VALID_INTENT.replace(
-                "## 目标 / Goal\n", "## 目标 / Goal\n\n## 目标 / Goal\n"
-            ),
-            "reordered": VALID_INTENT.replace("## 目标 / Goal", "## TEMP", 1)
-            .replace("## 背景 / Background", "## 目标 / Goal", 1)
-            .replace("## TEMP", "## 背景 / Background", 1),
-            "extra": VALID_INTENT.replace(
-                "## 目标 / Goal", "## Extra\n\n## 目标 / Goal", 1
-            ),
-        }
-        for name, markdown in cases.items():
-            with self.subTest(name=name):
-                self.assertFalse(
-                    self.runtime.validate_template(markdown, template_text=TEMPLATE).ok
-                )
+    def test_accepts_flexible_order_titles_levels_and_extra_sections(self):
+        markdown = "# 背景\n系统目前存在延迟。\n\n## 需求说明\n处理外部请求。\n\n## 方案\n增加隔离。\n\n## 改造目标\n提高可用性。\n"
+        self.assertTrue(self.runtime.validate_template(markdown).ok)
 
-    def test_requires_background_requirements_gwt_and_references_content(self):
-        markdown = VALID_INTENT.replace(
-            "目标用户 / 业务角色：Developers and reviewers.\n", ""
-        )
-        markdown = markdown.replace(
-            "- Given a complete intent, When the validator checks it, Then it reports the document as valid.",
-            "- The behavior should be clear.",
-        )
-        markdown = markdown.replace(
-            "相关仓库 / 模块：The documentation repository.\n", ""
-        )
-        report = self.runtime.validate_template(markdown, template_text=TEMPLATE)
+    def test_missing_and_empty_essential_sections_are_reported(self):
+        report = self.runtime.validate_template("## 目标\n提高可用性\n## 背景\n待补充\n")
         self.assertFalse(report.ok)
-        joined = " ".join(report.errors)
-        self.assertTrue("业务角色" in joined or "Background" in joined)
-        self.assertIn("Given", joined)
-        self.assertTrue("相关仓库" in joined or "References" in joined)
+        self.assertTrue(any("需求" in e for e in report.errors))
+        self.assertTrue(any("背景" in e for e in report.errors))
 
-    def test_given_when_then_must_be_in_acceptance_criteria_not_requirements_or_code(
-        self,
-    ):
-        markdown = VALID_INTENT.replace(
-            "- Given a complete intent, When the validator checks it, Then it reports the document as valid.",
-            "- The validator reports a complete document as valid.",
-        ).replace(
-            "- The validator checks required content and document structure.",
-            "- Given a complete intent, When a reviewer reads it, Then the behavior is clear.\n"
-            "```text\nGiven this is code, When it is ignored, Then it is not acceptance criteria.\n```",
-        )
-        report = self.runtime.validate_template(markdown, template_text=TEMPLATE)
-        self.assertFalse(report.ok)
-        self.assertTrue(any("Acceptance Criteria" in error for error in report.errors))
-
-    def test_rejects_bare_scaffolds_and_placeholder_only_sections(self):
-        markdown = VALID_INTENT.replace(
-            "Current requests are tracked in several places.", "待补充"
-        )
-        markdown = markdown.replace(
-            "Operators can see the intent and verify the desired outcome.", "TODO"
-        )
-        report = self.runtime.validate_template(markdown, template_text=TEMPLATE)
+    def test_headings_in_fenced_code_do_not_satisfy_requirements(self):
+        report = self.runtime.validate_template("## 目标\n提高可用性\n## 背景\n系统延迟\n```md\n## 需求\n内容\n```\n")
         self.assertFalse(report.ok)
 
-    def test_ignores_quoted_field_examples_but_accepts_html_mark_wrappers(self):
-        quoted = VALID_INTENT.replace(
-            "现状与问题：Current requests are tracked in several places.",
-            "> 现状与问题：Current requests are tracked in several places.",
-        )
-        report = self.runtime.validate_template(quoted, template_text=TEMPLATE)
-        self.assertFalse(report.ok)
-        self.assertTrue(any("现状与问题" in error for error in report.errors))
-
-        marked = VALID_INTENT.replace(
-            "现状与问题：Current requests are tracked in several places.",
-            "<mark>现状与问题：</mark> <mark>Current requests are tracked in several places.</mark>",
-        )
-        marked_report = self.runtime.validate_template(marked, template_text=TEMPLATE)
-        self.assertTrue(marked_report.ok, marked_report.errors)
-
-    def test_rejects_the_unfilled_bundled_template(self):
+    def test_unfilled_template_is_not_substantive(self):
         template = (RUNTIME_DIR / "intent-template.md").read_text(encoding="utf-8")
-        report = self.runtime.validate_template(template, template_text=template)
-        self.assertFalse(report.ok)
+        self.assertFalse(self.runtime.validate_template(template).ok)
 
     def test_accepts_reasoned_not_applicable_value(self):
         report = self.runtime.validate_template(VALID_INTENT, template_text=TEMPLATE)
